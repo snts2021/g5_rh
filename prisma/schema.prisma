@@ -1,0 +1,3276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model DescricaoEmbarque {
+  Id            Int     @id @default(autoincrement())
+  Descricao     String? @db.VarChar(100)
+  Codigo        Int?
+  Mostrar       Int?
+  prancha_bruta String? @db.Char(3)
+  prancha_emap  String? @db.Char(3)
+  Prancha       Int?
+  Dono          String? @db.VarChar(20)
+  Desc_English  String? @db.VarChar(100)
+  Unidade       String? @db.VarChar(20)
+  Desc_Laytime  String? @db.VarChar(100)
+}
+
+model EmbarqueNavio {
+  Id               Int       @id @default(autoincrement())
+  NavioViagem      String?   @db.VarChar(20)
+  Linha            Int?
+  Data             DateTime? @db.Date
+  Turno            String?   @db.VarChar(15)
+  Guindasteiro     String?   @db.VarChar(20)
+  Porao            Int?
+  Camada           Int?
+  Descricao        String?   @db.VarChar(40)
+  DataHoraTerno    DateTime? @db.DateTime(0)
+  Qtd              Int?
+  Posicao          String?   @db.VarChar(10)
+  Tipo             String?   @db.VarChar(10)
+  Supervisor       String?   @db.VarChar(255)
+  Navio            String?   @db.VarChar(255)
+  status_navio     String?   @db.VarChar(15)
+  Terno            Int?
+  Tempo            Decimal?  @db.Decimal(15, 9)
+  Obs              String?   @db.VarChar(255)
+  Desc_English     String?   @db.VarChar(40)
+  Descricao_Motivo String?   @db.VarChar(100)
+  periodo          String?   @db.VarChar(12)
+  data_incremental DateTime? @db.DateTime(0)
+}
+
+model EmbarqueNavio_imagem_camada {
+  id_EmbarqueNavio_imagem_camada Int     @id @default(autoincrement())
+  NavioViagem                    String? @db.VarChar(20)
+  porao                          String? @db.VarChar(20)
+  camada                         String? @db.VarChar(20)
+  imagem                         Bytes?  @db.MediumBlob
+  descricao                      String? @db.VarChar(255)
+  url                            String? @db.VarChar(150)
+  imagem_nome                    String? @db.Text
+}
+
+model EmbarqueSOF {
+  Id                           Int                     @id @default(autoincrement())
+  Vessel                       String?                 @db.VarChar(20)
+  berth                        String?                 @db.VarChar(10)
+  SOF_Number                   Int?
+  Status_SOF                   String?                 @db.VarChar(15)
+  VOY                          String?                 @db.VarChar(15)
+  Port                         String?                 @db.VarChar(50)
+  Country                      String?                 @db.VarChar(30)
+  Terminal                     Int?
+  Total_Quantity_Tons          Int?
+  Total_Quantity_Units         Int?
+  Cargo                        String?                 @db.VarChar(50)
+  Shipper                      String?                 @db.VarChar(50)
+  Remarks                      String?                 @db.Text
+  Arrivel_Draft_FWD            Decimal?                @db.Decimal(5, 2)
+  Arrivel_Draft_AFT            Decimal?                @db.Decimal(5, 2)
+  Sailing_Draft_FWD            Decimal?                @db.Decimal(5, 2)
+  Sailing_Draft_AFT            Decimal?                @db.Decimal(5, 2)
+  Arrived_Roads                DateTime?               @db.DateTime(0)
+  Notice_Of_Readiness_Tendered DateTime?               @db.DateTime(0)
+  Notice_Of_Readiness_Accepted String?                 @db.VarChar(20)
+  Dropped_Anchor               DateTime?               @db.DateTime(0)
+  Anchor_Up                    DateTime?               @db.DateTime(0)
+  POB_Berthing                 DateTime?               @db.DateTime(0)
+  First_Line_Ashore            DateTime?               @db.DateTime(0)
+  All_Fast_Alongside           DateTime?               @db.DateTime(0)
+  Gangway_Placed_Ashore        DateTime?               @db.DateTime(0)
+  Cleared_By_Port_Authorities  DateTime?               @db.DateTime(0)
+  End_Of_Preparations_On_Board DateTime?               @db.DateTime(0)
+  Loading_Commenced            DateTime?               @db.DateTime(0)
+  Loading_Complete             DateTime?               @db.DateTime(0)
+  Pilot_On_Board_For_Sailing   DateTime?               @db.DateTime(0)
+  Ship_Sailed                  DateTime?               @db.DateTime(0)
+  ETA_In_The_Next_Port         DateTime?               @db.DateTime(0)
+  Email                        String?                 @db.Text
+  horas_operacionais           Decimal?                @db.Decimal(10, 2)
+  meta_prancha                 Int?
+  EmbarqueSOF_Cabecalho        EmbarqueSOF_Cabecalho[]
+  EmbarqueSOF_StowPlan         EmbarqueSOF_StowPlan[]
+
+  @@index([SOF_Number], name: "SOF_Number")
+  @@index([VOY], name: "VOY")
+}
+
+model EmbarqueSOF_Arquivos {
+  idEmbarqueSOF_Arquivos Int     @id @default(autoincrement())
+  sof_number             String? @db.VarChar(50)
+  NomeDocumentoFinal     String? @db.VarChar(80)
+  ArquivoDocumentoFinal  Bytes?
+}
+
+model EmbarqueSOF_Cabecalho {
+  Id          Int          @id @default(autoincrement())
+  Campo       String?      @db.VarChar(50)
+  DataHora    DateTime?    @db.DateTime(0)
+  SOF_Number  Int?
+  EmbarqueSOF EmbarqueSOF? @relation(fields: [SOF_Number], references: [SOF_Number])
+
+  @@index([SOF_Number], name: "SOF_Number")
+}
+
+model EmbarqueSOF_Coluna_Cabecalho {
+  Id            Int     @id @default(autoincrement())
+  Coluna_Tabela String? @db.VarChar(30)
+  Colunas       String? @db.VarChar(50)
+  Ordem         Int?
+  Adicionar     String? @db.VarChar(7)
+}
+
+model EmbarqueSOF_HOLD_Inspection {
+  Id         Int       @id @default(autoincrement())
+  SOF_Number String?   @db.VarChar(15)
+  VOY        String?   @db.VarChar(15)
+  HOLD       Int?
+  Date       DateTime? @db.DateTime(0)
+  Bench      String?   @db.VarChar(5)
+  Overhang   String?   @db.VarChar(5)
+}
+
+model EmbarqueSOF_Lista_Cabecalho {
+  Id        Int     @id @default(autoincrement())
+  Colunas   String? @db.VarChar(50)
+  Adicionar String? @db.VarChar(7)
+}
+
+model EmbarqueSOF_Port_Discharge {
+  Id                Int     @id @default(autoincrement())
+  Port_Of_Discharge String? @db.VarChar(50)
+  QTY_Units         Int?
+  QTY_Tons          Int?
+  Shippers          String? @db.VarChar(20)
+  SOF_Number        String? @db.VarChar(20)
+}
+
+model EmbarqueSOF_Ships_Particular {
+  Id             Int      @id @default(autoincrement())
+  Vessel         String?  @db.VarChar(20)
+  Lloyd_Register Int?
+  Flag           String?  @db.VarChar(40)
+  Charterer      String?  @db.VarChar(50)
+  Bench          String?  @db.VarChar(20)
+  Class          String?  @db.VarChar(30)
+  Owners         String?  @db.VarChar(50)
+  DWT            Decimal? @db.Decimal(10, 2)
+  GRT            Decimal? @db.Decimal(10, 2)
+  NET            Decimal? @db.Decimal(10, 2)
+  LOA            Decimal? @db.Decimal(10, 2)
+  BEAM           Decimal? @db.Decimal(10, 2)
+  Crane_Capacity Int?
+  Type           String?  @db.VarChar(15)
+  Especialty     String?  @db.VarChar(35)
+  Type1          String?  @db.VarChar(10)
+  Crane          String?  @db.VarChar(30)
+}
+
+model EmbarqueSOF_StowPlan {
+  id_EmbarqueSOF_StowPlan Int          @id @default(autoincrement())
+  porao                   Int?
+  num_camada              Int?
+  qtd_fardos              Int?
+  sof_number              Int?
+  EmbarqueSOF             EmbarqueSOF? @relation(fields: [sof_number], references: [SOF_Number])
+
+  @@index([sof_number], name: "FK_EmbarqueSOF_StowPlan_EmbarqueSOF")
+}
+
+model EmbarqueSOF_TimeLine {
+  idEmbarqueSOF_TimeLine Int       @id @default(autoincrement())
+  NavioViagem            String?   @db.VarChar(50)
+  Data                   DateTime? @db.Date
+  Turno                  String?   @db.VarChar(10)
+  descricao              String?   @db.Text
+  NomeNavio              String?   @db.VarChar(50)
+}
+
+model EmbarqueSOF_WorkingTimes {
+  Id                 Int       @id @default(autoincrement())
+  Turn_Time          String?   @db.Char(5)
+  NavioViagem        String?   @db.VarChar(20)
+  Data               DateTime? @db.Date
+  Porao              Int?
+  Conta              String?   @db.VarChar(5)
+  Desc_English       String?   @db.VarChar(50)
+  Inicio             DateTime? @db.DateTime(0)
+  Fim                DateTime? @db.DateTime(0)
+  Tempo              Decimal?  @db.Decimal(15, 9)
+  Tempo_Acumulado_D  Decimal?  @db.Decimal(15, 9)
+  Tempo_Acumulado_H  String?   @default("") @db.VarChar(12)
+  Qtd                Int?
+  Terno              Int?
+  Linha              Int?
+  Turno              String?   @db.VarChar(15)
+  Guindasteiro       String?   @db.VarChar(20)
+  Camada             Int?
+  Descricao          String?   @db.VarChar(40)
+  DataHoraTerno      DateTime? @db.DateTime(0)
+  Posicao            String?   @db.VarChar(10)
+  Tipo               String?   @db.VarChar(10)
+  Supervisor         String?   @db.VarChar(255)
+  Navio              String?   @db.VarChar(255)
+  Obs                String?   @db.VarChar(255)
+  Em_Demurrage       String?   @db.VarChar(5)
+  Porcentagem        Decimal?  @db.Decimal(10, 0)
+  Qtd_Ternos         Int?
+  Tempo_Qtd_Ternos_D Decimal?  @db.Decimal(15, 9)
+  Tempo_Qtd_Ternos_H String?   @db.VarChar(50)
+  Hold_Discount      String?   @db.Char(10)
+}
+
+model EmbarqueSOF_email {
+  id_EmbarqueSOF_email Int     @id @default(autoincrement())
+  nome                 String? @db.VarChar(50)
+  email                String? @db.VarChar(50)
+}
+
+model EmbarqueSOF_qualidade {
+  id_EmbarqueSOF_qualidade   Int                          @id @default(autoincrement())
+  SOF_Number                 String?                      @db.VarChar(15)
+  lateral                    Int?
+  base                       Int?
+  rasgo                      Int?
+  impressao                  Int?
+  arame_fardo                Int?
+  inseto                     Int?
+  desalinhado_max            Int?
+  desalinhado_random         Int?
+  data_inclusao              DateTime?                    @db.Date
+  quantidade_carreta         Int?
+  numeracao                  Int?
+  EmbarqueSOF_qualidade_foto EmbarqueSOF_qualidade_foto[]
+}
+
+model EmbarqueSOF_qualidade_foto {
+  id_EmbarqueSOF_qualidade_foto Int                    @id @default(autoincrement())
+  id_EmbarqueSOF_qualidade      Int?
+  arquivo                       String?                @db.VarChar(100)
+  url                           String?                @db.VarChar(100)
+  EmbarqueSOF_qualidade         EmbarqueSOF_qualidade? @relation(fields: [id_EmbarqueSOF_qualidade], references: [id_EmbarqueSOF_qualidade])
+
+  @@index([id_EmbarqueSOF_qualidade], name: "FK_EmbarqueSOF_qualidade_foto_EmbarqueSOF_qualidade")
+}
+
+model adonis_schema {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  name           String   @db.VarChar(255)
+  batch          Int
+  migration_time DateTime @default(now()) @db.Timestamp(0)
+}
+
+model api_tokens {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    Int?      @db.UnsignedInt
+  name       String    @db.VarChar(255)
+  type       String    @db.VarChar(255)
+  token      String    @unique @db.VarChar(64)
+  expires_at DateTime? @db.Timestamp(0)
+  created_at DateTime  @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
+  users      users?    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], name: "api_tokens_user_id_foreign")
+}
+
+model atualizar_sheets {
+  id_atualizar_sheets Int       @id @default(autoincrement())
+  data                DateTime? @default(now()) @db.DateTime(0)
+  consulta            String?   @db.VarChar(5000)
+  url                 String?   @db.VarChar(255)
+  evento              String?   @db.VarChar(50)
+  pagina              String?   @db.VarChar(50)
+  id_sheets           String?   @db.VarChar(100)
+  processado          Int       @default(0)
+
+  @@index([pagina], name: "pagina")
+  @@index([processado], name: "processado")
+}
+
+model cadastro_agencia {
+  id_cadastro_agencia Int     @id @default(autoincrement())
+  nome_agencia        String? @db.VarChar(50)
+}
+
+model cadastro_armador {
+  id_cadastro_armador Int     @id @default(autoincrement())
+  nome_armador        String? @db.VarChar(50)
+}
+
+model cadastro_navio {
+  id_cadastro_navio Int     @id @default(autoincrement())
+  nome_navio        String? @unique @db.VarChar(50)
+  tipo              String? @db.VarChar(50)
+}
+
+model chamado_responsavel_cadastro {
+  id_chamado_responsavel_cadastro Int     @id @default(autoincrement())
+  nome                            String? @db.VarChar(50)
+  email                           String? @db.VarChar(50)
+}
+
+model chamados {
+  id_chamados         Int       @id @default(autoincrement())
+  n_chamado           String?   @db.VarChar(30)
+  data_abertura       DateTime? @db.DateTime(0)
+  usuario             String?   @db.VarChar(50)
+  email               String?   @db.VarChar(70)
+  usuario_solicitante String?   @db.VarChar(50)
+  email_solicitante   String?   @db.VarChar(50)
+  setor_solicitante   String?   @db.VarChar(50)
+  atualizado_por      String?   @db.VarChar(50)
+  motivo              String    @db.Text
+  status_chamados     String?   @db.VarChar(30)
+  data_finalizacao    DateTime? @db.DateTime(0)
+  solucao             String    @db.Text
+  foto                Bytes?    @db.MediumBlob
+  data_prazo          DateTime? @db.Date
+  tipo_chamado        String?   @db.VarChar(50)
+  responsavel         String?   @db.VarChar(50)
+  responsavel_email   String?   @db.VarChar(50)
+}
+
+model chamados_historico {
+  id_chamados_historico Int       @id @default(autoincrement())
+  id_chamados           Int?
+  report                Int?
+  observacao            String?   @db.Text
+  data_report           DateTime? @db.DateTime(0)
+  usuario               String?   @db.VarChar(50)
+}
+
+model chamados_setor {
+  id_chamados_setor Int     @id @default(autoincrement())
+  setor             String? @db.VarChar(50)
+}
+
+model contas_cadastro_bancos {
+  id_contas_cadastro_bancos Int      @id @default(autoincrement())
+  banco                     String?  @unique @db.VarChar(50)
+  taxa_juros                Decimal? @db.Decimal(10, 3)
+  conta_corrente            String?  @db.VarChar(20)
+}
+
+model desempenho_assinatura {
+  id_desempenho_assinatura Int    @id @default(autoincrement())
+  id_desempenho_avaliacao  Int?
+  assinatura_avaliador     Bytes?
+  assinatura_avaliado      Bytes?
+}
+
+model desempenho_assinatura_desempenho {
+  id_desempenho_assinatura_desempenho Int    @id @default(autoincrement())
+  id_desempenho_avaliacao             Int?
+  assinatura_avaliador                Bytes?
+  assinatura_avaliado                 Bytes?
+}
+
+model desempenho_avaliacao {
+  id_desempenho_avaliacao Int       @id @default(autoincrement())
+  login                   String?   @db.VarChar(50)
+  setor                   String?   @db.VarChar(50)
+  data_avaliacao          DateTime? @db.Date
+  nome_avaliador          String?   @db.VarChar(50)
+  nota_geral              Int?
+  observacao              String?   @db.VarChar(50)
+  status_avaliacao        String?   @db.VarChar(15)
+  nota_comportamental     Int?
+  nota_desempenho         Int?
+  status_nota_desempenho  String?   @db.VarChar(50)
+}
+
+model desempenho_item_desempenho {
+  id_desempenho_item_desempenho Int      @id @default(autoincrement())
+  id_desempenho_avaliacao       Int?
+  item                          String?  @db.VarChar(400)
+  notas                         Decimal? @db.Decimal(10, 2)
+}
+
+model desempenho_itens {
+  id_desempenho_itens     Int     @id @default(autoincrement())
+  id_desempenho_avaliacao Int?
+  item                    String? @db.VarChar(200)
+  observacao              String? @db.VarChar(50)
+  notas                   Int?
+}
+
+model desempenho_itens_cadastro {
+  desempenho_itens_cadastro Int     @id @default(autoincrement())
+  item                      String? @db.VarChar(400)
+  setor                     String? @db.VarChar(50)
+}
+
+model desempenho_itens_desempenho_cadastro {
+  id_desempenho_itens_desempenho_cadastro Int     @id @default(autoincrement())
+  item                                    String? @db.VarChar(150)
+}
+
+model desempenho_setor_cadastro {
+  id_desempenho_setor_cadastro Int     @id @default(autoincrement())
+  setor                        String? @db.VarChar(50)
+}
+
+model embarque_poroes {
+  id_embarque_poroes Int  @id @default(autoincrement())
+  SOF_Number         Int?
+  porao              Int?
+  planejado          Int?
+  embarcado          Int?
+  saldo              Int  @default(0)
+  id_embarque_navio  Int?
+}
+
+model empilhadeira_checklist_controle_email {
+  id_empilhadeira_checklist_controle_email Int     @id @default(autoincrement())
+  login                                    String? @unique @db.VarChar(50)
+}
+
+model empilhadeiras_area_cadastro {
+  id_empilhadeiras_area_cadastro Int                       @id @default(autoincrement())
+  area                           String                    @unique @default("0") @db.VarChar(50)
+  empilhadeiras_checklist        empilhadeiras_checklist[]
+}
+
+model empilhadeiras_cadastro {
+  id_empilhadeiras_cadastro       Int                               @id @default(autoincrement())
+  descricao                       String?                           @unique @db.VarChar(50)
+  modelo                          String?                           @db.VarChar(50)
+  situacao                        String?                           @db.VarChar(50)
+  status_empilhadeira             String?                           @db.VarChar(50)
+  empilhadeiras_checklist         empilhadeiras_checklist[]
+  trem_viagem_dados_empilhadeiras trem_viagem_dados_empilhadeiras[]
+}
+
+model empilhadeiras_checklist {
+  id_empilhadeiras_checklist    Int                             @id @default(autoincrement())
+  data                          DateTime?                       @db.DateTime(0)
+  nome_operadores               String?                         @db.VarChar(50)
+  empilhadeiras                 String?                         @db.VarChar(50)
+  area                          String?                         @db.VarChar(50)
+  local                         String?                         @db.VarChar(50)
+  turno                         String?                         @db.VarChar(50)
+  empilhadeiras_area_cadastro   empilhadeiras_area_cadastro?    @relation(fields: [area], references: [area])
+  empilhadeiras_cadastro        empilhadeiras_cadastro?         @relation(fields: [empilhadeiras], references: [descricao])
+  empilhadeiras_local_cadastro  empilhadeiras_local_cadastro?   @relation(fields: [local], references: [local])
+  empilhadeiras_turno_cadastro  empilhadeiras_turno_cadastro?   @relation(fields: [turno], references: [turno])
+  empilhadeiras_checklist_itens empilhadeiras_checklist_itens[]
+
+  @@index([area], name: "FK_empilhadeiras_checklist_empilhadeiras_area_cadastro")
+  @@index([empilhadeiras], name: "FK_empilhadeiras_checklist_empilhadeiras_cadastro")
+  @@index([local], name: "FK_empilhadeiras_checklist_empilhadeiras_local_cadastro")
+  @@index([turno], name: "turno")
+}
+
+model empilhadeiras_checklist_itens {
+  id_empilhadeiras_checklist_itens       Int                      @id @default(autoincrement())
+  id_empilhadeiras_checklist             Int?
+  id_empilhadeiras_checklist_verificacao Int?
+  status_atual                           String?                  @db.VarChar(50)
+  observacao                             String?                  @db.Text
+  verificacao                            String?                  @db.VarChar(50)
+  empilhadeiras_checklist                empilhadeiras_checklist? @relation(fields: [id_empilhadeiras_checklist], references: [id_empilhadeiras_checklist])
+
+  @@index([id_empilhadeiras_checklist], name: "FK_empilhadeiras_checklist_itens_empilhadeiras_checklist")
+}
+
+model empilhadeiras_checklist_operadores_2 {
+  id_empilhadeiras_checklist_operadores_2 Int       @id @default(autoincrement())
+  data                                    DateTime? @db.DateTime(0)
+  equipamento                             String?   @db.VarChar(50)
+  operador                                String?   @db.VarChar(50)
+  area                                    String?   @db.VarChar(50)
+  local                                   String?   @db.VarChar(50)
+  turno                                   String?   @db.VarChar(50)
+}
+
+model empilhadeiras_checklist_verificacao {
+  id_empilhadeiras_checklist_verificacao Int    @id @default(autoincrement())
+  verificacao                            String @default("") @db.VarChar(150)
+  parametro                              String @default("") @db.VarChar(150)
+  codigo_acao                            Int
+  modelo                                 String @default("") @db.VarChar(20)
+}
+
+model empilhadeiras_checklist_verificacao_modelo {
+  id_empilhadeiras_checklist_verificacao_modelo Int    @id @default(autoincrement())
+  verificacao                                   String @default("") @db.VarChar(150)
+  parametro                                     String @default("") @db.VarChar(150)
+  codigo_acao                                   Int
+  modelo                                        String @default("") @db.VarChar(20)
+}
+
+model empilhadeiras_cod_acao_cadastro {
+  id_empilhadeiras_cod_acao_cadastro Int  @id @default(autoincrement())
+  cod_acao                           Int?
+}
+
+model empilhadeiras_cod_legenda {
+  id_empilhadeiras_cod_legenda Int     @id @default(autoincrement()) @db.UnsignedInt
+  cod_legenda                  Int?
+  legenda                      String? @db.VarChar(50)
+}
+
+model empilhadeiras_local_cadastro {
+  id_empilhadeiras_local_cadastro Int                       @id @default(autoincrement())
+  local                           String                    @unique @db.VarChar(50)
+  empilhadeiras_checklist         empilhadeiras_checklist[]
+}
+
+model empilhadeiras_modelo {
+  id_empilhadeiras_modelo Int    @id @default(autoincrement())
+  modelo                  String @db.VarChar(5)
+}
+
+model empilhadeiras_notificacoes {
+  id_empilhadeiras_notificacoes Int       @id @default(autoincrement())
+  cod_grupo                     Int?
+  texto_mensagem                String?   @db.LongText
+  data_inicial                  DateTime? @db.Date
+  data_final                    DateTime? @db.Date
+}
+
+model empilhadeiras_op_cadastro {
+  id_empilhadeiras_op_cadastro Int     @id @default(autoincrement())
+  nome_operadores              String? @db.VarChar(50)
+}
+
+model empilhadeiras_situacao {
+  id_empilhadeiras_situacao Int    @id @default(autoincrement())
+  situacao                  String @default("0") @db.VarChar(50)
+}
+
+model empilhadeiras_status {
+  id_empilhadeiras_status   Int       @id @default(autoincrement())
+  id_empilhadeiras_cadastro Int?
+  descricao                 String?   @db.VarChar(50)
+  data_inicio               DateTime? @db.DateTime(0)
+  data_fim                  DateTime? @db.DateTime(0)
+  tempo                     Decimal?  @db.Decimal(10, 5)
+  status_atual              String?   @db.VarChar(50)
+  operador                  String?   @db.VarChar(50)
+}
+
+model empilhadeiras_status_cadastro {
+  id_empilhadeiras_status_cadastro Int    @id @default(autoincrement())
+  status                           String @default("") @db.VarChar(50)
+}
+
+model empilhadeiras_statusatual {
+  id_empilhadeiras_statusatual Int     @id @default(autoincrement())
+  status_atual                 String? @db.VarChar(50)
+}
+
+model empilhadeiras_troca_de_gas {
+  id_empilhadeiras_troca_de_gas Int       @id @default(autoincrement())
+  id_empilhadeira_status        Int?
+  operador                      String?   @db.VarChar(50)
+  empilhadeira                  String?   @db.VarChar(50)
+  data_inicio                   DateTime? @db.DateTime(0)
+  data_fim                      DateTime? @db.DateTime(0)
+  tempo                         Decimal?  @db.Decimal(10, 5)
+  status_atual                  String?   @db.VarChar(50)
+}
+
+model empilhadeiras_turno_cadastro {
+  id_empilhadeiras_turno_cadastro Int                       @id @default(autoincrement())
+  turno                           String?                   @unique @db.VarChar(50)
+  empilhadeiras_checklist         empilhadeiras_checklist[]
+}
+
+model faturamento_cte {
+  id_faturamento_cte               Int       @id @default(autoincrement())
+  emissao                          DateTime? @db.Date
+  cliente                          String?   @db.VarChar(50)
+  titulo                           String?   @db.VarChar(10)
+  vencimento                       DateTime? @db.Date
+  valor                            Decimal?  @db.Decimal(10, 2)
+  dias_atrasados                   Int?
+  pagamento_realizado              String?   @db.VarChar(5)
+  data_pagamento                   DateTime? @db.Date
+  data_negociacao                  DateTime? @db.Date
+  banco                            String?   @db.VarChar(50)
+  creditado                        Decimal?  @db.Decimal(10, 2)
+  juros                            Decimal?  @db.Decimal(10, 2)
+  conta_corrente                   String?   @db.VarChar(50)
+  usuario_responsavel              String?   @db.VarChar(50)
+  data_atualizacao                 DateTime? @db.DateTime(0)
+  placa                            String?   @db.VarChar(50)
+  motorista                        String?   @db.VarChar(50)
+  impostos                         Decimal?  @db.Decimal(10, 2)
+  combustivel                      Decimal?  @db.Decimal(10, 2)
+  arla                             Decimal?  @db.Decimal(10, 2)
+  pedagio                          Decimal?  @db.Decimal(10, 2)
+  motorista_custo                  Decimal?  @db.Decimal(10, 2)
+  dias_viagem                      Decimal?  @db.Decimal(10, 2)
+  diarias                          Decimal?  @db.Decimal(10, 2)
+  locacao_prestacao                Decimal?  @db.Decimal(10, 2)
+  km_inicial                       Decimal?  @db.Decimal(10, 2)
+  km_final                         Decimal?  @db.Decimal(10, 2)
+  frete                            Decimal   @db.Decimal(10, 2)
+  id_faturamento_performace_placas Int?
+  diaria                           Decimal?  @db.Decimal(20, 2)
+
+  @@index([id_faturamento_performace_placas], name: "FK_faturamento_cte_contas_a_receber")
+}
+
+model faturamento_performace_placas {
+  id_faturamento_performace_placas Int       @id @default(autoincrement())
+  data_performace                  DateTime  @db.Date
+  placa                            String?   @db.VarChar(10)
+  motorista                        String?   @db.VarChar(25)
+  faturamento                      Decimal?  @db.Decimal(10, 2)
+  impostos                         Decimal?  @db.Decimal(10, 2)
+  combustivel                      Decimal?  @db.Decimal(10, 2)
+  arla                             Decimal?  @db.Decimal(10, 2)
+  pedagio                          Decimal?  @db.Decimal(10, 2)
+  motorista_custo                  Decimal?  @db.Decimal(10, 2)
+  dias_viagens                     Int?
+  diarias                          Decimal?  @db.Decimal(10, 2)
+  locacao_prestacao                Decimal?  @db.Decimal(10, 2)
+  manutencao                       Decimal?  @db.Decimal(10, 2)
+  saldo                            Decimal?  @db.Decimal(10, 2)
+  percentual                       Decimal?  @db.Decimal(10, 2)
+  despesa_total                    Decimal?  @db.Decimal(10, 2)
+  km_inicial                       Decimal?  @db.Decimal(10, 0)
+  km_final                         Decimal?  @db.Decimal(10, 0)
+  km                               Decimal?  @db.Decimal(10, 0)
+  data_atualizacao                 DateTime? @default(now()) @db.DateTime(0)
+  frete                            Decimal?  @db.Decimal(10, 2)
+
+  @@index([data_performace], name: "data_performace")
+}
+
+model faturamento_placa_cadastro {
+  id_faturamento_placa_cadastro Int     @id @default(autoincrement())
+  placa                         String? @unique @db.VarChar(10)
+  media_padrao_km               Int?
+  frota                         String? @db.VarChar(10)
+}
+
+model frota_local_cadastro {
+  id_frota_local_cadastro Int    @id @default(autoincrement())
+  local                   String @default("0") @db.VarChar(50)
+}
+
+model frota_status {
+  id_frota_status Int       @id @default(autoincrement())
+  placa           String?   @db.VarChar(50)
+  status_frota    String?   @db.VarChar(50)
+  nome            String?   @db.VarChar(50)
+  data_inicial    DateTime? @db.DateTime(0)
+  data_final      DateTime? @db.DateTime(0)
+  tempo           Decimal?  @db.Decimal(10, 0)
+  local_atual     String?   @db.VarChar(50)
+}
+
+model g5_contato {
+  id_g5_contato Int @id @default(autoincrement())
+  nome          Int @default(0)
+  email         Int @default(0)
+  telefone      Int @default(0)
+  assunto       Int @default(0)
+  mensagem      Int @default(0)
+}
+
+model gas_cadastro {
+  id_gas_cadastro Int       @id @default(autoincrement())
+  data_hora       DateTime? @db.DateTime(0)
+  turno           String?   @db.VarChar(10)
+  usuario         String?   @db.VarChar(10)
+  empilhadeira    String?   @db.VarChar(10)
+}
+
+model gas_inventario {
+  id_gas_inventario Int       @id @default(autoincrement())
+  assinatura1       Bytes     @default(dbgenerated("('0')"))
+  assinatura2       Bytes     @default(dbgenerated("('0')"))
+  recebido          Int       @default(0)
+  saida             Int       @default(0)
+  cheios            Int       @default(0)
+  vazios            Int       @default(0)
+  avariados         Int       @default(0)
+  total             Int       @default(0)
+  data_hora         DateTime? @db.DateTime(0)
+  usuario           String    @default("0") @db.VarChar(50)
+  nome_assinatura   String?   @db.VarChar(100)
+}
+
+model imp_empilhadeiras_cadastro {
+  id_empilhadeiras_cadastro           Int                                   @id @default(autoincrement())
+  descricao                           String?                               @unique @db.VarChar(50)
+  modelo                              String?                               @db.VarChar(50)
+  situacao                            String?                               @db.VarChar(50)
+  status_empilhadeira                 String?                               @db.VarChar(50)
+  imp_trem_viagem_dados_empilhadeiras imp_trem_viagem_dados_empilhadeiras[]
+}
+
+model imp_manutencao_motivos {
+  id_manutencao_motivos Int     @id @default(autoincrement())
+  motivos               String? @db.VarChar(50)
+}
+
+model imp_manutencao_motivos_mecanico {
+  id_manutencao_motivos_mecanico Int     @id @default(autoincrement())
+  motivos                        String? @db.VarChar(50)
+}
+
+model imp_manutencao_motivos_principal {
+  id_manutencao_motivos_principal Int       @id @default(autoincrement())
+  id_empilhadeiras_status         Int?
+  status                          String?   @db.VarChar(50)
+  empilhadeira                    String?   @db.VarChar(50)
+  operador                        String?   @db.VarChar(50)
+  mecanico                        String?   @db.VarChar(50)
+  motivo                          String?   @db.VarChar(50)
+  motivo_mecanico                 String?   @db.VarChar(50)
+  hora_inicio_atendimento         DateTime? @db.DateTime(0)
+  hora_final_atendimento          DateTime? @db.DateTime(0)
+  hora_manutencao                 DateTime? @db.DateTime(0)
+  tempo_manutencao                Decimal?  @db.Decimal(10, 5)
+  tempo_atendimento               Decimal?  @db.Decimal(10, 5)
+  previsao_retorno                DateTime? @db.DateTime(0)
+}
+
+model imp_trem_carregamento {
+  id_trem       Int       @id @default(autoincrement())
+  desc_ferrovia String?   @db.VarChar(50)
+  viagem        String?   @db.VarChar(15)
+  data_viagem   DateTime? @db.DateTime(0)
+  qtd_vagoes    Int?
+
+  @@index([viagem], name: "viagem")
+}
+
+model imp_trem_carregamento_empilhadeira {
+  id_emp_viagem Int     @id @default(autoincrement())
+  viagem        String? @db.VarChar(15)
+  modelo        String? @db.VarChar(10)
+  n_puxada      Int?
+
+  @@index([modelo], name: "id_empilhadeira")
+  @@index([n_puxada], name: "n_puxada")
+}
+
+model imp_trem_carregamento_viagem {
+  id_puxada        Int       @id @default(autoincrement())
+  viagem           String?   @db.VarChar(50)
+  n_puxada         Int?
+  qtd_vagoes       Int?
+  data_inicio      DateTime? @db.DateTime(0)
+  data_fim         DateTime? @db.DateTime(0)
+  tempo_impacto    Decimal   @default(0.0000) @db.Decimal(10, 4)
+  tempo_bruto      Decimal?  @db.Decimal(10, 4)
+  tempo_liquido    Decimal?  @db.Decimal(10, 4)
+  qtd_empilhadeira Int?
+
+  @@index([viagem], name: "viagem")
+}
+
+model imp_trem_viagem {
+  id_trem_viagem      Int       @id @default(autoincrement())
+  viagem              String?   @db.VarChar(25)
+  tempo_bruto         Float?
+  tempo_liquido       Float?
+  tempo_impacto       Float?
+  data_viagem         DateTime? @db.Date
+  quantidade          Int?
+  status_trem         String?   @db.VarChar(20)
+  tempo_ciclo         Float?
+  tempo_impacto_ciclo Float?
+
+  @@index([viagem], name: "viagem")
+}
+
+model imp_trem_viagem_dados {
+  id_trem_viagem_dados Int       @id @default(autoincrement())
+  viagem               String?   @db.VarChar(25)
+  linha                String?   @db.VarChar(50)
+  quantidade           Int?
+  posicionamento       DateTime? @db.DateTime(0)
+  abertura             DateTime? @db.DateTime(0)
+  descarga_inicio      DateTime? @db.DateTime(0)
+  descarga_fim         DateTime? @db.DateTime(0)
+  fechamento           DateTime? @db.DateTime(0)
+  retirada             DateTime? @db.DateTime(0)
+  tc                   Int?
+  cf                   Int?
+  ec                   Int?
+  desc_bruta           Decimal?  @db.Decimal(10, 5)
+  desc_liquida         Decimal?  @db.Decimal(10, 5)
+  tempo_impactos       Decimal?  @db.Decimal(10, 5)
+  tempo_troca          Decimal?  @db.Decimal(10, 5)
+  telegram_usuario     String?   @db.VarChar(50)
+  telegram_hora        DateTime? @db.DateTime(0)
+  usuario              String?   @db.VarChar(50)
+
+  @@index([viagem], name: "viagem")
+}
+
+model imp_trem_viagem_dados_empilhadeiras {
+  id_trem_viagem_dados_empilhadeiras Int                         @id @default(autoincrement())
+  id_trem_viagem_dados               Int?
+  descricao                          String?                     @db.VarChar(50)
+  modelo                             String?                     @db.VarChar(50)
+  imp_empilhadeiras_cadastro         imp_empilhadeiras_cadastro? @relation(fields: [descricao], references: [descricao])
+
+  @@index([descricao], name: "FK_imp_trem_viagem_dados_empilhadeiras")
+}
+
+model imp_trem_viagem_dados_impactos {
+  id_trem_viagem_dados_impactos Int       @id @default(autoincrement())
+  id_trem_viagem_dados          Int?
+  tempo                         DateTime? @db.Time(0)
+  impacto                       String?   @db.VarChar(100)
+  motivos                       String?   @db.VarChar(100)
+  empresa                       String?   @db.VarChar(20)
+
+  @@index([impacto], name: "FK_trem_viagem_dados_impactos_trem_viagem_impactos")
+}
+
+model imp_trem_viagem_dados_vagoes {
+  id_trem_viagem_dados_vagoes Int       @id @default(autoincrement())
+  id_trem_viagem_dados        Int?
+  numero                      String?   @db.VarChar(11)
+  descricao                   String?   @db.VarChar(50)
+  vagoes                      String?   @db.VarChar(50)
+  nf                          Int?
+  material                    Int?
+  tons                        Int?
+  vao                         String?   @db.Char(15)
+  tons_2                      Int?
+  vao_2                       Int?
+  obs                         String?   @db.VarChar(155)
+  linha                       Int?
+  data_atual                  DateTime? @db.DateTime(0)
+}
+
+model imp_trem_viagem_dados_vagoes_email {
+  id_trem_viagem_dados_vagoes_email Int     @id @default(autoincrement())
+  nome                              String? @db.VarChar(50)
+  email                             String? @db.VarChar(50)
+}
+
+model imp_trem_viagem_dados_vagoes_planejamento {
+  id_trem_viagem_dados_vagoes_planejamento Int       @id @default(autoincrement())
+  viagem                                   String?   @db.VarChar(8)
+  linha                                    Int?
+  vagao                                    String?   @db.Char(20)
+  nf                                       Int?
+  material                                 Int?
+  tons                                     Int?
+  vao                                      String?   @db.Char(15)
+  tons_2                                   Int?
+  vao_2                                    Int?
+  obs                                      String?   @db.VarChar(155)
+  data_hora_atualizacao                    DateTime? @default(now()) @db.DateTime(0)
+}
+
+model imp_trem_viagem_fonte_impactos {
+  id_trem_viagem_fonte_impactos Int                        @id @default(autoincrement())
+  empresa                       String?                    @unique @db.VarChar(50)
+  imp_trem_viagem_impactos      imp_trem_viagem_impactos[]
+}
+
+model imp_trem_viagem_impactos {
+  id_trem_viagem_impactos        Int                             @id @default(autoincrement())
+  impacto                        String?                         @unique @db.VarChar(100)
+  empresa                        String?                         @db.VarChar(50)
+  imp_trem_viagem_fonte_impactos imp_trem_viagem_fonte_impactos? @relation(fields: [empresa], references: [empresa])
+
+  @@index([empresa], name: "FK_imp_trem_viagem_impactos_imp_trem_viagem_fonte_impactos")
+}
+
+model imp_trem_viagem_linhas {
+  id_trem_viagem_linha Int     @id @default(autoincrement())
+  linha                String? @db.VarChar(50)
+}
+
+model imp_trem_viagem_qualidade {
+  id_trem_viagem_qualidade        Int                               @id @default(autoincrement())
+  viagem                          String?                           @db.VarChar(15)
+  lote                            String?                           @db.VarChar(15)
+  linha                           Int?
+  ftt                             String?                           @db.VarChar(15)
+  lateral                         Int?
+  base                            Int?
+  rasgo                           Int?
+  impressao                       Int?
+  arame_fardo                     Int?
+  inseto                          Int?
+  desalinhado_max                 Int?
+  desalinhado_random              Int?
+  imp_trem_viagem_qualidade_fotos imp_trem_viagem_qualidade_fotos[]
+}
+
+model imp_trem_viagem_qualidade_fotos {
+  id_trem_viagem_qualidade_fotos Int                        @id @default(autoincrement())
+  id_trem_viagem_qualidade       Int?
+  arquivo                        String?                    @db.VarChar(100)
+  url                            String?                    @db.VarChar(100)
+  imp_trem_viagem_qualidade      imp_trem_viagem_qualidade? @relation(fields: [id_trem_viagem_qualidade], references: [id_trem_viagem_qualidade])
+
+  @@index([id_trem_viagem_qualidade], name: "FK_imp_trem_viagem_qualidade_fotos_imp_trem_viagem_qualidade")
+}
+
+model indicador_navio {
+  id_indicador_navio    Int                     @id @default(autoincrement())
+  data                  DateTime?               @db.DateTime(0)
+  data_hora_fim         DateTime?               @db.DateTime(0)
+  navio_viagem          String?                 @db.VarChar(50)
+  nome_navio            String?                 @db.VarChar(50)
+  berco                 String?                 @db.VarChar(50)
+  eta                   DateTime?               @db.DateTime(0)
+  etb                   DateTime?               @db.DateTime(0)
+  etc                   DateTime?               @db.DateTime(0)
+  qtd_planejada         Int?
+  qtd_carregada         Int?
+  tipo                  String?                 @db.VarChar(50)
+  nome_armador          String?                 @db.VarChar(50)
+  prancha_bruta         Int?
+  prancha_liquida       Int?
+  turno                 String?                 @db.VarChar(50)
+  nome_agencia          String?                 @db.VarChar(50)
+  impacto               DateTime?               @db.Time(0)
+  impacto_segundos      Decimal?                @db.Decimal(20, 0)
+  indicador_navio_terno indicador_navio_terno[]
+}
+
+model indicador_navio_eventos {
+  id_indicador_navio_eventos Int     @id @default(autoincrement())
+  code                       Int?
+  eventos                    String? @db.VarChar(150)
+  grupo                      String? @db.VarChar(20)
+}
+
+model indicador_navio_hora {
+  id_indicador_navio_hora Int     @id @default(autoincrement())
+  hora_txt                String? @db.VarChar(8)
+  id_hora                 Int?
+  turno                   String? @db.VarChar(50)
+}
+
+model indicador_navio_impactos {
+  id_indicador_navio_impactos Int                    @id @default(autoincrement())
+  id_indicador_navio_terno    Int?
+  impacto                     DateTime?              @db.Time(0)
+  descricao                   String?                @db.VarChar(50)
+  terno                       String?                @db.VarChar(10)
+  inicio_impacto              DateTime?              @db.Time(0)
+  fim_impacto                 DateTime?              @db.Time(0)
+  observacao                  String?                @db.Text
+  indicador_navio_terno       indicador_navio_terno? @relation(fields: [id_indicador_navio_terno], references: [id_indicador_navio_terno])
+
+  @@index([id_indicador_navio_terno], name: "FK_indicador_navio_impactos_indicador_navio")
+}
+
+model indicador_navio_prancha_ternos {
+  id_indicador_navio_prancha_ternos Int       @id @default(autoincrement())
+  id_indicador_navio                Int?
+  data                              DateTime? @db.Date
+  turno                             String?   @db.VarChar(10)
+  impacto                           Float?    @db.Float
+  periodo                           Float?    @db.Float
+  tempo_bruto                       Float?    @db.Float
+  tempo_liquido                     Float?    @db.Float
+  prancha_bruta                     Decimal?  @db.Decimal(10, 0)
+  prancha_liquida                   Decimal?  @db.Decimal(10, 0)
+  terno                             String?   @db.VarChar(10)
+}
+
+model indicador_navio_terno {
+  id_indicador_navio_terno       Int                              @id @default(autoincrement())
+  id_indicador_navio             Int?
+  terno                          String?                          @db.VarChar(10)
+  data                           DateTime?                        @db.Date
+  hora                           DateTime?                        @db.DateTime(0)
+  hora2                          String?                          @db.VarChar(5)
+  tons                           Int?
+  tons_h                         Int?
+  meta                           Int?
+  turno                          String?                          @db.VarChar(5)
+  impacto                        DateTime?                        @db.Time(0)
+  impacto_segundos               Decimal?                         @db.Decimal(20, 0)
+  hora_inicio                    DateTime?                        @db.Time(0)
+  hora_fim                       DateTime?                        @db.Time(0)
+  porao                          Int?
+  indicador_navio                indicador_navio?                 @relation(fields: [id_indicador_navio], references: [id_indicador_navio])
+  indicador_navio_impactos       indicador_navio_impactos[]
+  indicador_navio_terno_lingadas indicador_navio_terno_lingadas[]
+
+  @@index([id_indicador_navio], name: "FK_indicador_navio_terno_indicador_navio")
+}
+
+model indicador_navio_terno_lingadas {
+  id_indicador_navio_terno_lingadas Int                    @id @default(autoincrement())
+  id_indicador_navio_terno          Int?
+  camada                            Int?
+  quantidade                        Int?
+  porao                             Int?
+  id_indicador_navio                Int
+  indicador_navio_terno             indicador_navio_terno? @relation(fields: [id_indicador_navio_terno], references: [id_indicador_navio_terno])
+
+  @@index([id_indicador_navio_terno], name: "FK_indicador_navio_terno_lingadas_indicador_navio_terno")
+}
+
+model indicador_navio_turno {
+  id__indicador_navio_turno Int     @id @default(autoincrement()) @map("id_indicador_navio_turno")
+  turno                     String? @db.VarChar(50)
+  hora                      String? @db.VarChar(50)
+}
+
+model indicadores_cadastro_navio {
+  id_cadastro_navio Int     @id @default(autoincrement())
+  nome_navio        String? @db.VarChar(50)
+  tipo              String? @db.VarChar(50)
+}
+
+model inventario_dados {
+  id_inventario_dados     Int     @id @default(autoincrement())
+  id_inventario_principal Int?
+  vao                     String? @db.VarChar(50)
+  NI                      String? @db.VarChar(50)
+  capa                    String? @db.VarChar(5)
+  numero                  Int?
+  subvao                  Int?
+  qtd_fisica              Int?
+  qtd_sistema             Int?
+  qtd_diferenca           Int?
+  observacao              String? @db.VarChar(250)
+  qtd_30                  Int?
+  qtd_36                  Int?
+  qtd_46                  Int?
+  frente                  Int?
+
+  @@index([id_inventario_principal], name: "id_inventario_principal")
+}
+
+model inventario_operacoes_turno {
+  id_inventario_operacoes_turno Int     @id @default(autoincrement())
+  id_inventario_principal       Int?
+  vao                           String? @db.VarChar(15)
+  numero                        Int?
+  subvao                        Int?
+  qtd_tons                      Int?
+  linha                         Int?
+  viagem                        String? @db.Char(15)
+  obs                           String? @db.VarChar(255)
+}
+
+model inventario_principal {
+  id_inventario_principal Int       @id @default(autoincrement())
+  nome                    String?   @db.VarChar(50)
+  turno                   String?   @db.VarChar(50)
+  data_hora               DateTime? @db.DateTime(0)
+  data_hora_finalizado    DateTime? @db.DateTime(0)
+  status_inventario       String?   @db.VarChar(20)
+  assinatura              Bytes?
+  assinatura2             Bytes?
+  observacao              String?   @db.VarChar(500)
+  responsavel             String?   @db.VarChar(50)
+  usar_assinatura_usuario Int?
+
+  @@index([nome], name: "nome")
+}
+
+model inventario_vao {
+  id_inventario_vao Int     @id @default(autoincrement())
+  vao               String? @db.VarChar(50)
+  numero            Int?
+  subvao            Int?
+}
+
+model line_up {
+  id_line_up         Int     @id @default(autoincrement())
+  descricao          String? @db.VarChar(20)
+  berco              String? @db.VarChar(5)
+  navio              String? @db.VarChar(25)
+  operacao           String? @db.VarChar(20)
+  bordo              String? @db.VarChar(20)
+  comp               String? @db.VarChar(5)
+  dwt                String? @db.VarChar(50)
+  carga              String? @db.VarChar(15)
+  qtd_carga          String? @db.VarChar(15)
+  calado             String? @db.VarChar(10)
+  agencia            String? @db.VarChar(50)
+  ultima_atualizacao String? @db.VarChar(20)
+  previsao_chegada   String? @db.VarChar(20)
+  previsao_atracar   String? @db.VarChar(20)
+}
+
+model manuntencao_combustivel {
+  id_manuntencao_combustivel Int       @id @default(autoincrement())
+  centro_custo               Int?
+  descricao                  String?   @db.VarChar(80)
+  tipo_abastecimento         String?   @db.VarChar(80)
+  realizado_litros           Decimal?  @db.Decimal(10, 2)
+  orcado                     Decimal?  @db.Decimal(10, 2)
+  realizado_valor            Decimal?  @db.Decimal(10, 2)
+  competencia                DateTime? @db.Date
+  valor_litro                Decimal?  @db.Decimal(10, 2)
+}
+
+model manutencao_motivos {
+  id_manutencao_motivos Int     @id @default(autoincrement())
+  motivos               String? @db.VarChar(50)
+}
+
+model manutencao_motivos_mecanico {
+  id_manutencao_motivos_mecanico Int     @id @default(autoincrement())
+  motivos                        String? @db.VarChar(50)
+}
+
+model manutencao_motivos_principal {
+  id_manutencao_motivos_principal Int       @id @default(autoincrement())
+  id_empilhadeiras_status         Int?
+  status                          String?   @db.VarChar(50)
+  empilhadeira                    String?   @db.VarChar(50)
+  operador                        String?   @db.VarChar(50)
+  mecanico                        String?   @db.VarChar(50)
+  motivo                          String?   @db.VarChar(50)
+  motivo_mecanico                 String?   @db.VarChar(50)
+  hora_inicio_atendimento         DateTime? @db.DateTime(0)
+  hora_final_atendimento          DateTime? @db.DateTime(0)
+  hora_manutencao                 DateTime? @db.DateTime(0)
+  tempo_manutencao                Decimal?  @db.Decimal(10, 5)
+  tempo_atendimento               Decimal?  @db.Decimal(10, 5)
+  previsao_retorno                DateTime? @db.DateTime(0)
+}
+
+model mecanica_checklist {
+  id_mecanica_checklist           Int     @id @default(autoincrement())
+  id_mecanica_checklist_principal Int?
+  item                            String? @db.VarChar(150)
+  status_item                     String? @db.VarChar(10)
+  observacao                      String? @db.VarChar(255)
+  tem_foto                        Int?
+}
+
+model mecanica_checklist_foto {
+  id_mecanica_checklist_foto Int     @id @default(autoincrement())
+  id_mecanica_checklist      Int?
+  foto                       Bytes?
+  arquivo                    String? @db.VarChar(50)
+  url                        String? @db.VarChar(100)
+}
+
+model mecanica_checklist_inconformidade {
+  id_mecanica_checklist_inconformidade Int     @id @default(autoincrement())
+  id_mecanica_checklist_principal      Int?
+  item                                 String? @db.VarChar(50)
+  observacao                           String? @db.VarChar(50)
+  responsavel_checklist                String? @db.VarChar(50)
+  responsavel_mecanico                 String? @db.VarChar(50)
+}
+
+model mecanica_checklist_itens {
+  id_Imecanica_checklist_itens Int     @id @default(autoincrement())
+  Itens                        String? @db.VarChar(255)
+  Tipo                         String? @db.VarChar(20)
+}
+
+model mecanica_checklist_principal {
+  id_mecanica_checklist_principal Int       @id @default(autoincrement())
+  nome                            String?   @db.VarChar(50)
+  frota                           String?   @db.VarChar(10)
+  data_hora_inicio                DateTime? @db.DateTime(0)
+  data_hora_final                 DateTime? @db.DateTime(0)
+  km_inicial                      Int?
+  combustivel_inicial             String?   @db.VarChar(20)
+  status_cheklist                 String?   @db.VarChar(20)
+  semirreboque                    String?   @db.VarChar(10)
+  tipo_checklist                  String?   @db.VarChar(50)
+  nome_assinatura1                String?   @db.VarChar(50)
+  assinatura1                     Bytes?    @db.Blob
+  nome_assinatura2                String?   @db.VarChar(50)
+  assinatura2                     Bytes?    @db.Blob
+  tipo_check                      String?   @db.VarChar(50)
+}
+
+model mecanica_disponibilidade {
+  id_mecanica_disponibilidade Int       @id @default(autoincrement())
+  equipamento                 String?   @db.Char(15)
+  status_equipamento          String?   @db.Char(15)
+  arquivo                     String?   @db.VarChar(50)
+  url                         String?   @db.VarChar(100)
+  problema                    String?   @db.MediumText
+  acao                        String?   @db.VarChar(50)
+  status_manutencao           String?   @db.MediumText
+  data_parada                 DateTime? @db.DateTime(0)
+  data_previsao_retorno       DateTime? @db.DateTime(0)
+  data_retorno                DateTime? @db.DateTime(0)
+  ordem_servico               Int?
+  unidade                     String?   @db.VarChar(50)
+  data_atualizacao            DateTime? @default(now()) @db.DateTime(0)
+  identificacao               String?   @db.VarChar(50)
+  status_suprimentos          String?   @db.VarChar(100)
+}
+
+model mecanica_frota {
+  id_mecaninca_frota Int     @id @default(autoincrement())
+  frota              String? @unique @db.VarChar(10)
+  placa              String? @db.VarChar(10)
+  fabricante_modelo  String? @db.VarChar(100)
+  ano_fabricacao     Int?
+  ano_modelo         Int?
+  chassi             String? @db.VarChar(20)
+  renavam            String? @db.VarChar(11)
+  centro_custo       String? @db.VarChar(100)
+  km_hr_atual        Float?
+  km_hr              Float?
+  situacao_real      String? @db.VarChar(50)
+}
+
+model mecanica_painel {
+  id_mecanica_painel Int       @id @default(autoincrement())
+  data_hora          DateTime? @db.DateTime(0)
+  operador           String?   @db.VarChar(50)
+  frota              String?   @db.VarChar(50)
+  semirreboque       String?   @db.VarChar(50)
+  itens              String?   @db.VarChar(50)
+  status_mecanica    String?   @db.VarChar(50)
+  status_descricao   String?   @db.Text
+  prazo              DateTime? @db.Date
+  data_finalizacao   DateTime? @db.Date
+}
+
+model mecanica_semirreboque {
+  id_mecanica_semirreboque Int     @id @default(autoincrement())
+  frota                    String? @db.VarChar(10)
+  placa                    String? @db.VarChar(10)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mobile_colaboradores {
+  menu String @default("0") @db.VarChar(50)
+
+  @@ignore
+}
+
+model procedimentos {
+  id_procedimentos Int     @id @default(autoincrement())
+  descricao        String? @db.VarChar(50)
+  nome             String? @db.VarChar(50)
+  tamanho          String? @db.VarChar(50)
+  arquivo          Bytes?
+  youtube          String? @db.VarChar(50)
+}
+
+model projetos {
+  id_projetos        Int       @id @default(autoincrement())
+  projeto            String?   @db.VarChar(150)
+  descricao          String?   @db.MediumText
+  data_inicio        DateTime? @db.Date
+  data_fim           DateTime? @db.Date
+  data_conclusao     DateTime? @db.Date
+  porcentagem        Int?
+  status_projeto     String?   @db.VarChar(15)
+  qtd_dias_uteis     Int?
+  area               String?   @db.VarChar(15)
+  tipo               String?   @db.VarChar(15)
+  orcamento          Decimal?  @db.Decimal(10, 2)
+  realizado          Decimal?  @db.Decimal(10, 2)
+  saldo              Decimal?  @db.Decimal(10, 2)
+  ordem_investimento String?   @db.VarChar(20)
+}
+
+model projetos_capex_opex {
+  id_projetos_capex_opex Int     @id @default(autoincrement())
+  capex_opex             String? @db.VarChar(20)
+  id_projetos_principal  Int?
+}
+
+model projetos_gastos {
+  id_projetos_gastos  Int       @id @default(autoincrement())
+  id_projeto          Int?
+  id_modulo           Int?
+  projeto             String?   @db.VarChar(50)
+  modulo              String?   @db.VarChar(50)
+  data_gasto          DateTime? @db.Date
+  valor               Decimal?  @db.Decimal(20, 2)
+  data_atualizacao    DateTime? @db.DateTime(0)
+  usuario_responsavel String?   @db.VarChar(50)
+}
+
+model projetos_itens {
+  id_projetos_itens     Int       @id @default(autoincrement())
+  id_projetos_principal Int?
+  descricao_item        String?   @db.VarChar(255)
+  responsavel           String?   @db.VarChar(50)
+  empresa               String?   @db.VarChar(50)
+  data_inicio           DateTime? @db.DateTime(0)
+  data_fim              DateTime? @db.DateTime(0)
+  data_conclusao        DateTime? @db.DateTime(0)
+  porcentagem           Int?
+  observacao            String?   @db.VarChar(255)
+  status_item           String?   @db.VarChar(15)
+  qtd_dias_uteis        Int?
+}
+
+model projetos_itens_empresa {
+  id_projetos_itens_empresa Int     @id @default(autoincrement())
+  empresa                   String? @db.VarChar(50)
+}
+
+model projetos_principal {
+  id_projetos_principal    Int       @id @default(autoincrement())
+  id_projeto               Int?
+  responsavel              String?   @db.VarChar(50)
+  responsavel_2            String?   @db.VarChar(50)
+  nome_projeto             String?   @db.VarChar(100)
+  descricao_projeto        String?   @db.Text
+  qtd_planejado            Int?
+  qtd_executado            Int?
+  qtd_atrasado             Int?
+  data_criacao             DateTime? @db.DateTime(0)
+  data_inicio              DateTime? @db.DateTime(0)
+  data_fim                 DateTime? @db.DateTime(0)
+  data_atualizacao         DateTime? @db.DateTime(0)
+  data_conclusao           DateTime? @db.DateTime(0)
+  porcentagem              Int?
+  status_projeto_principal String?   @db.VarChar(50)
+  projeto                  String?   @db.VarChar(200)
+  inf_investimento         String?   @db.VarChar(50)
+  valor_investimento       String?   @db.VarChar(50)
+  opex_capex               String?   @db.VarChar(50)
+  qtd_dias_uteis           Int?
+
+  @@index([id_projeto], name: "id_projeto")
+  @@index([responsavel], name: "responsavel")
+  @@index([responsavel_2], name: "responsavel_2")
+}
+
+model qsms_inspecao_extintor {
+  id_qsms_inspecao_extintor       Int                               @id @default(autoincrement())
+  data_inspecao                   DateTime                          @db.Date
+  tecnico_seguranca               String?                           @db.VarChar(80)
+  status_inspecao                 String?                           @db.VarChar(50)
+  qsms_inspecao_extintor_dados    qsms_inspecao_extintor_dados[]
+  qsms_inspecao_extintor_detalhes qsms_inspecao_extintor_detalhes[]
+}
+
+model qsms_inspecao_extintor_cadastro {
+  id_qsms_inspecao_extintor_cadastro Int       @id @default(autoincrement())
+  n_extintor                         String?   @db.VarChar(30)
+  localizacao                        String?   @db.VarChar(30)
+  tipo                               String?   @db.VarChar(5)
+  vencimento_recarga                 DateTime? @db.Date
+}
+
+model qsms_inspecao_extintor_dados {
+  id_qsms_inspecao_extintor_dados Int                               @id @default(autoincrement())
+  id_qsms_inspecao_extintor       Int?
+  n_extintor                      String?                           @db.VarChar(30)
+  localizacao                     String?                           @db.VarChar(80)
+  vencimento_recarga              DateTime?                         @db.Date
+  teste_hidraulico                Int?                              @db.Year
+  observacoes                     String?                           @db.Text
+  status_inspecao                 String?                           @db.VarChar(50)
+  qsms_inspecao_extintor          qsms_inspecao_extintor?           @relation(fields: [id_qsms_inspecao_extintor], references: [id_qsms_inspecao_extintor])
+  qsms_inspecao_extintor_detalhes qsms_inspecao_extintor_detalhes[]
+
+  @@index([id_qsms_inspecao_extintor], name: "FK_qsms_inspecao_extintor_dados_qsms_inspecao_extintor")
+}
+
+model qsms_inspecao_extintor_detalhes {
+  id_qsms_inspecao_extintor_detalhes Int                           @id @default(autoincrement())
+  id_qsms_inspecao_extintor_dados    Int?
+  id_qsms_inspecao_extintor          Int?
+  item                               String?                       @db.VarChar(30)
+  estado                             String?                       @db.VarChar(20)
+  responsavel                        String?                       @db.VarChar(50)
+  data_modificacao                   DateTime?                     @db.DateTime(0)
+  qsms_inspecao_extintor             qsms_inspecao_extintor?       @relation(fields: [id_qsms_inspecao_extintor], references: [id_qsms_inspecao_extintor])
+  qsms_inspecao_extintor_dados       qsms_inspecao_extintor_dados? @relation(fields: [id_qsms_inspecao_extintor_dados], references: [id_qsms_inspecao_extintor_dados])
+
+  @@index([id_qsms_inspecao_extintor], name: "FK_qsms_inspecao_extintor_detalhes_qsms_inspecao_extintor")
+  @@index([id_qsms_inspecao_extintor_dados], name: "FK_qsms_inspecao_extintor_detalhes_qsms_inspecao_extintor_dados")
+}
+
+model qsms_inspecao_extintor_detalhes_cadastro {
+  id_qsms_inspecao_extintor_detalhes_cadastro Int     @id @default(autoincrement())
+  itens                                       String? @db.VarChar(50)
+}
+
+model reuniao_acao {
+  id_reuniao_acao             Int       @id @default(autoincrement())
+  id_projetos_principal       Int?
+  id_reuniao_informacao_geral Int?
+  id_reuniao_temas            Int?
+  acao                        String?   @db.VarChar(255)
+  prazo                       DateTime? @db.Date
+  status_acao                 String?   @db.VarChar(50)
+  responsavel                 String?   @db.VarChar(50)
+}
+
+model reuniao_grupo {
+  id_reuniao_grupo Int     @id @default(autoincrement())
+  grupo            String? @db.VarChar(50)
+}
+
+model reuniao_informacao_geral {
+  id_reuniao_informacao_geral Int       @id @default(autoincrement())
+  id_projetos_principal       Int?
+  id_modulo                   Int?
+  rev                         Int       @default(0)
+  local                       String?   @db.VarChar(50)
+  motivo                      String?   @db.VarChar(100)
+  data_inicio                 DateTime? @db.DateTime(0)
+  data_fim                    DateTime? @db.DateTime(0)
+  status_reuniao              String?   @db.VarChar(50)
+  responsavel_ata             String?   @db.VarChar(50)
+  sistema                     String?   @db.VarChar(50)
+}
+
+model reuniao_participantes {
+  id_reuniao_participantes    Int     @id @default(autoincrement())
+  id_reuniao_informacao_geral Int?
+  participante                String? @db.VarChar(50)
+  cargo                       String? @db.VarChar(50)
+  email                       String? @db.VarChar(50)
+}
+
+model reuniao_participantes_grupo {
+  id_reuniao_participantes_grupo Int     @id @default(autoincrement())
+  nome                           String? @db.VarChar(50)
+  grupo                          String? @db.VarChar(50)
+  email                          String? @db.VarChar(50)
+}
+
+model reuniao_temas {
+  id_reuniao_temas            Int     @id @default(autoincrement())
+  id_reuniao_informacao_geral Int     @default(0)
+  tema                        String? @db.VarChar(50)
+  departamento                String? @db.VarChar(50)
+  assuntos                    String? @db.VarChar(50)
+  consideracao                String? @db.Text
+}
+
+model sc_log_sgi {
+  id            Int       @id @default(autoincrement())
+  inserted_date DateTime? @db.DateTime(0)
+  username      String    @db.VarChar(90)
+  application   String    @db.VarChar(200)
+  creator       String    @db.VarChar(30)
+  ip_user       String    @db.VarChar(32)
+  action        String    @db.VarChar(30)
+  description   String?   @db.Text
+
+  @@index([action], name: "action")
+  @@index([application], name: "application")
+  @@index([creator], name: "creator")
+  @@index([inserted_date], name: "inserted_date")
+  @@index([ip_user], name: "ip_user")
+  @@index([username], name: "username")
+}
+
+model sec_biometriausers {
+  login           String  @id @db.VarChar(255)
+  pswd            String  @db.VarChar(255)
+  name            String? @db.VarChar(64)
+  email           String? @db.VarChar(255)
+  active          String? @db.VarChar(1)
+  activation_code String? @db.VarChar(32)
+  priv_admin      String? @db.VarChar(1)
+  B_TextFIR       Bytes?  @db.Blob
+}
+
+model sec_g5apps {
+  app_name          String              @id @db.VarChar(128)
+  app_type          String?             @db.VarChar(255)
+  description       String?             @db.VarChar(255)
+  module            String?             @db.VarChar(100)
+  sec_g5groups_apps sec_g5groups_apps[]
+}
+
+model sec_g5groups {
+  group_id           Int                  @id @default(autoincrement())
+  description        String?              @unique @db.VarChar(255)
+  sec_g5groups_apps  sec_g5groups_apps[]
+  sec_g5users_groups sec_g5users_groups[]
+}
+
+model sec_g5groups_apps {
+  group_id     Int
+  app_name     String       @db.VarChar(128)
+  module       String?      @db.VarChar(100)
+  description  String?      @db.VarChar(255)
+  priv_access  String?      @db.VarChar(1)
+  priv_insert  String?      @db.VarChar(1)
+  priv_delete  String?      @db.VarChar(1)
+  priv_update  String?      @db.VarChar(1)
+  priv_export  String?      @db.VarChar(1)
+  priv_print   String?      @db.VarChar(1)
+  sec_g5apps   sec_g5apps   @relation(fields: [app_name], references: [app_name])
+  sec_g5groups sec_g5groups @relation(fields: [group_id], references: [group_id])
+
+  @@id([group_id, app_name])
+  @@index([app_name], name: "sec_g5groups_apps_ibfk_2")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sec_g5logged {
+  login      String  @db.VarChar(255)
+  date_login String? @db.VarChar(128)
+  sc_session String? @db.VarChar(32)
+  ip         String? @db.VarChar(32)
+
+  @@ignore
+}
+
+model sec_g5registro_login {
+  id_sec_g5registro_login Int       @id @default(autoincrement())
+  login                   String?   @db.VarChar(25)
+  nome_usuario            String?   @db.VarChar(80)
+  aplicacao               String?   @db.VarChar(50)
+  data_hora_login         DateTime? @db.DateTime(0)
+}
+
+model sec_g5users {
+  login              String               @id @db.VarChar(255)
+  pswd               String               @db.VarChar(255)
+  name               String?              @db.VarChar(64)
+  email              String?              @db.VarChar(255)
+  active             String?              @db.VarChar(1)
+  activation_code    String?              @db.VarChar(32)
+  priv_admin         String?              @db.VarChar(1)
+  turno              String?              @db.VarChar(50)
+  id_face            String?              @db.VarChar(50)
+  funcao             String?              @db.VarChar(50)
+  imagem             Bytes?
+  data_admissao      DateTime?            @db.Date
+  polo               String?              @db.VarChar(20)
+  dashboard          String?              @db.VarChar(10)
+  contato            String?              @db.VarChar(30)
+  arquivo            String?              @db.VarChar(50)
+  url                String?              @db.VarChar(100)
+  matricula          String?              @db.VarChar(50)
+  assinatura         String?              @db.VarChar(50)
+  data_nascimento    DateTime?            @db.Date
+  use_terms          String?              @db.VarChar(3)
+  data_confirm_terms DateTime?            @db.DateTime(0)
+  sec_g5users_groups sec_g5users_groups[]
+
+  @@index([login], name: "login")
+}
+
+model sec_g5users_groups {
+  login        String       @db.VarChar(255)
+  group_id     Int
+  sec_g5groups sec_g5groups @relation(fields: [group_id], references: [group_id])
+  sec_g5users  sec_g5users  @relation(fields: [login], references: [login])
+
+  @@id([login, group_id])
+  @@index([group_id], name: "sec_g5users_groups_ibfk_2")
+}
+
+model sgi_absenteismo_colaborador {
+  id_sgi_absenteismo_colaborador Int       @id @default(autoincrement())
+  codigo                         Int?
+  nome                           String?   @db.VarChar(150)
+  previstas                      Decimal?  @db.Decimal(10, 0)
+  afastamentos                   Decimal?  @db.Decimal(10, 0)
+  obrigatorias                   Decimal?  @db.Decimal(10, 0)
+  abono_falta                    Decimal?  @db.Decimal(10, 0)
+  trabalhada                     Decimal?  @db.Decimal(10, 0)
+  tempo_espera                   Decimal?  @db.Decimal(10, 0)
+  total                          Decimal?  @db.Decimal(10, 0)
+  diferenca                      Decimal?  @db.Decimal(10, 0)
+  percentual                     Decimal?  @db.Decimal(10, 2)
+  data_absenteismo               DateTime? @db.Date
+  lotacao                        String?   @db.VarChar(50)
+  cargo                          String?   @db.VarChar(50)
+}
+
+model sgi_absenteismo_colaborador_setor {
+  data        DateTime  @db.Date
+  codigo      Int
+  cargo       String?   @db.VarChar(100)
+  porcentagem Decimal?  @db.Decimal(10, 2)
+  lotacao     String    @db.VarChar(50)
+  data_update DateTime? @default(now()) @db.DateTime(0)
+
+  @@id([data, codigo, lotacao])
+}
+
+model sgi_aso {
+  id_sgi_aso          Int       @id @default(autoincrement())
+  matricula           String?   @db.VarChar(50)
+  nome                String?   @db.VarChar(255)
+  lotacao             String?   @db.VarChar(150)
+  cargo               String?   @db.VarChar(50)
+  data_aso            DateTime? @db.Date
+  data_aso_concluida  DateTime? @db.Date
+  data_vencimento_aso DateTime? @db.Date
+  dias_restantes      String?   @db.VarChar(50)
+  arquivo             String?   @db.VarChar(50)
+  status_aso          String?   @db.VarChar(50)
+
+  @@index([nome], name: "login")
+}
+
+model sgi_cargo {
+  id_sgi_cargo                   Int                              @id @default(autoincrement())
+  setor                          String?                          @db.VarChar(255)
+  cargo                          String?                          @db.VarChar(255)
+  sgi_curso_atocontratacao_cargo sgi_curso_atocontratacao_cargo[]
+  sgi_curso_meioambiente_cargo   sgi_curso_meioambiente_cargo[]
+  sgi_curso_qualidade_cargo      sgi_curso_qualidade_cargo[]
+  sgi_curso_sso_cargo            sgi_curso_sso_cargo[]
+}
+
+model sgi_cnh {
+  id_sgi_cnh             Int       @id @default(autoincrement())
+  matricula              String?   @db.VarChar(100)
+  nome                   String?   @db.VarChar(255)
+  lotacao                String?   @db.VarChar(100)
+  cargo                  String?   @db.VarChar(150)
+  habilitacao_categoria  String?   @db.VarChar(5)
+  cnh                    String?   @db.VarChar(255)
+  data_ultima_cnh        DateTime? @db.Date
+  data_cnh_concluida     DateTime? @db.Date
+  habilitacao_vencimento DateTime? @db.Date
+  dias_restantes         String?   @db.VarChar(50)
+  status_cnh             String?   @db.VarChar(100)
+  observacao             String?   @db.VarChar(255)
+}
+
+model sgi_colaborador_ordem_servico {
+  id_sgi_colaborador_ordem_servico Int     @id @default(autoincrement())
+  cargo                            String? @db.VarChar(100)
+  descricao_detalhada              String? @db.Text
+}
+
+model sgi_colaborador_ordem_servico_epi {
+  id_sgi_colaborador_ordem_servico_epi Int     @id @default(autoincrement())
+  id_sgi_colaborador_ordem_servico     Int?
+  obrigatorio                          String? @db.Text
+  eventual                             String? @db.Text
+}
+
+model sgi_colaborador_ordem_servico_informacao_fixa {
+  id_sgi_colaborador_ordem_servico_informacao_fixa Int     @id @default(autoincrement())
+  descricao_detalhada_fixa                         String? @db.Text
+  obrigacoes_empregado                             String? @db.Text
+  medida_preventiva_risco_ambiental                String? @db.Text
+  regra_de_ouro                                    String? @db.Text
+  norma_interna                                    String? @db.Text
+  penalidade                                       String? @db.Text
+  emergencia                                       String? @db.Text
+  instrucoes                                       String? @db.Text
+  recebimento_compromisso                          String? @db.Text
+}
+
+model sgi_colaborador_ordem_servico_risco_avaliacao {
+  id_sgi_colaborador_ordem_servico_risco_avaliacao Int     @id @default(autoincrement())
+  id_sgi_colaborador_ordem_servico                 Int?
+  fisico                                           String? @db.Text
+  quimico                                          String? @db.Text
+  biologico                                        String? @db.Text
+  ergonomico                                       String? @db.Text
+  acidentes                                        String? @db.Text
+}
+
+model sgi_colaboradores {
+  id_sgi_colaboradores   Int       @id @default(autoincrement())
+  codigo                 String?   @unique @db.VarChar(50)
+  arquivo                String?   @db.VarChar(50)
+  url                    String?   @db.VarChar(255)
+  nome                   String?   @db.VarChar(50)
+  cargo                  String?   @db.VarChar(50)
+  lotacao                String?   @db.VarChar(50)
+  celular                String?   @db.VarChar(50)
+  data_admissao          DateTime? @db.Date
+  equipamento_autorizado String?   @db.VarChar(50)
+  tipo_cnh               String?   @db.VarChar(50)
+  sgi_epi                sgi_epi[]
+  sgi_os                 sgi_os[]
+}
+
+model sgi_colaboradores_cargo_cadastro {
+  id_sgi_colaboradores_cargo_cadastro Int     @id @default(autoincrement())
+  cargo                               String? @db.VarChar(50)
+}
+
+model sgi_colaboradores_curso {
+  id_sgi_colaboradores_curso Int       @id @default(autoincrement())
+  matricula                  String?   @db.VarChar(50)
+  colaborador                String?   @db.VarChar(150)
+  turno                      String?   @db.VarChar(50)
+  cargo                      String?   @db.VarChar(150)
+  ref_curso                  Int?
+  id_sgi_curso               Int?
+  curso                      String?   @db.VarChar(200)
+  tipo_curso                 String?   @db.VarChar(50)
+  data_inclusao              DateTime? @db.Date
+  data_realizacao            DateTime? @db.Date
+  data_prazo_realizacao      DateTime? @db.Date
+  data_reciclagem            DateTime? @db.Date
+  status_curso               String?   @db.VarChar(50)
+  observacao                 String?   @db.Text
+  unidade                    String?   @db.VarChar(50)
+  contato                    String?   @db.VarChar(50)
+}
+
+model sgi_colaboradores_curso_lista_presenca {
+  id_sgi_colaboradores_curso_lista_presenca Int     @id @default(autoincrement())
+  ref_curso                                 String? @db.VarChar(50)
+  documento                                 Bytes?
+  nome_documento                            String? @db.VarChar(50)
+}
+
+model sgi_colaboradores_curso_lista_presenca_colaboradores {
+  id_sgi_colaboradores_curso_lista_presenca_colaboradores Int     @id @default(autoincrement())
+  id_sgi_colaboradores_curso_lista_presenca_principal     Int?
+  id_sgi_cursos                                           Int?
+  ref_curso                                               Int?
+  colaboradores                                           String? @db.VarChar(60)
+}
+
+model sgi_colaboradores_curso_lista_presenca_principal {
+  id_sgi_colaboradores_curso_lista_presenca_principal Int       @id @default(autoincrement())
+  data_hora_lista_presenca_inicio                     DateTime? @db.DateTime(0)
+  data_hora_lista_presenca_fim                        DateTime? @db.DateTime(0)
+  id_sgi_cursos                                       Int?
+  ref_curso                                           Int?
+  instrutor                                           String?   @db.VarChar(50)
+  local_treinamento                                   String?   @db.VarChar(50)
+  prazo_verificacao                                   DateTime? @db.Date
+  eficacia_curso                                      String?   @db.VarChar(50)
+  evidencias_curso                                    String?   @db.Text
+  nota_curso                                          Decimal?  @db.Decimal(10, 1)
+  prazo_realizacao                                    DateTime? @db.Date
+}
+
+model sgi_colaboradores_curso_questionario {
+  id_sgi_colaboradores_curso_questionario Int       @id @default(autoincrement())
+  colaborador                             String?   @db.VarChar(50)
+  data_realizacao                         DateTime? @db.Date
+  ref_curso                               Int?
+  id_sgi_curso                            Int?
+  curso                                   String?   @db.VarChar(50)
+  item                                    String?   @db.Text
+  resposta                                String?   @db.VarChar(5)
+  resposta_correta                        String?   @db.VarChar(5)
+}
+
+model sgi_colaboradores_curso_questionario_alternativas {
+  id_sgi_colaboradores_curso_questionario_alternativas Int     @id @default(autoincrement())
+  id_sgi_colaboradores_curso_questionario_cadastro     Int?
+  id_sgi_curso                                         Int?
+  alternativa                                          String? @db.Char(3)
+  descricao                                            String? @db.VarChar(255)
+
+  @@index([id_sgi_colaboradores_curso_questionario_cadastro], name: "id_sgi_colaboradores_curso_questionario_cadastro")
+}
+
+model sgi_colaboradores_curso_questionario_auto_avaliacao {
+  id_sgi_colaboradores_curso_questionario_auto_avaliacao Int       @id @default(autoincrement())
+  colaborador                                            String?   @db.VarChar(50)
+  data_realizacao                                        DateTime? @db.Date
+  ref_curso                                              Int?
+  curso                                                  String?   @db.VarChar(50)
+  perguntas                                              String?   @db.Text
+  avaliacao                                              String?   @db.VarChar(50)
+}
+
+model sgi_colaboradores_curso_questionario_auto_avaliacao_cadastro {
+  id_sgi_colaboradores_curso_questionario_auto_avaliacao_cadastro Int     @id @default(autoincrement())
+  perguntas                                                       String? @db.Text
+}
+
+model sgi_colaboradores_curso_questionario_cadastro {
+  id_sgi_colaboradores_curso_questionario_cadastro Int     @id @default(autoincrement())
+  id_sgi_cursos                                    Int?
+  curso                                            String? @db.VarChar(50)
+  item                                             String? @db.Text
+  resposta_correta                                 String? @db.Char(3)
+
+  @@index([id_sgi_cursos], name: "id_sgi_cursos")
+}
+
+model sgi_colaboradores_curso_video {
+  id_sgi_colaboradores_curso_video Int     @id @default(autoincrement())
+  id_sgi_curso                     Int?
+  curso                            String? @db.VarChar(50)
+  link_video                       String? @db.Text
+}
+
+model sgi_colaboradores_tela_cursos {
+  id_sgi_colaboradores_tela_cursos Int     @id @default(autoincrement())
+  abas                             String? @db.VarChar(50)
+}
+
+model sgi_controle_cargos {
+  id_sgi_controle_cargos Int       @id @default(autoincrement())
+  matricula              Int?
+  nome_colaborador       String?   @db.VarChar(50)
+  cargo_colaborador      String?   @db.VarChar(50)
+  id_sgi_colaboradores   Int?
+  data_inicio_cargo      DateTime? @db.Date
+  data_fim_cargo         DateTime? @db.Date
+  obervacao              String?   @db.VarChar(200)
+}
+
+model sgi_cronotacografo {
+  id_sgi_cronotacografo  Int       @id @default(autoincrement())
+  placa                  String?   @db.VarChar(10)
+  data_revisao_concluida DateTime? @db.Date
+  status_cronotacografo  String?   @db.VarChar(20)
+  data_ultima_revisao    DateTime? @db.Date
+  data_proxima_revisao   DateTime? @db.Date
+  dias_restantes         String?   @db.VarChar(5)
+  documentos             Bytes?
+  documentos_nome        String?   @db.VarChar(50)
+  responsavel            String?   @db.VarChar(20)
+  cronotacografo         String?   @db.VarChar(20)
+  data_atualizacao       DateTime? @db.DateTime(0)
+}
+
+model sgi_curso_atocontratacao {
+  id_sgi_curso_atocontratacao    Int                              @id @default(autoincrement())
+  curso                          String?                          @db.VarChar(255)
+  data_realizacao                DateTime?                        @db.Date
+  validade_certificado           String?                          @db.VarChar(100)
+  carga_horaria                  String?                          @db.VarChar(200)
+  periodicidade                  String?                          @db.VarChar(150)
+  publico__alvo                  String?                          @map("publico_ alvo") @db.VarChar(250)
+  disponibilidade                String?                          @db.VarChar(150)
+  sgi_curso_atocontratacao_cargo sgi_curso_atocontratacao_cargo[]
+}
+
+model sgi_curso_atocontratacao_cargo {
+  id_sgi_curso_atocontratacao_cargo Int                       @id @default(autoincrement())
+  id_sgi_cargo                      Int?
+  id_sgi_curso_atocontratacao       Int?
+  setor                             String?                   @db.VarChar(150)
+  cargo                             String?                   @db.VarChar(150)
+  curso                             String?                   @db.VarChar(150)
+  observacao                        String?                   @db.VarChar(50)
+  sgi_cargo                         sgi_cargo?                @relation(fields: [id_sgi_cargo], references: [id_sgi_cargo])
+  sgi_curso_atocontratacao          sgi_curso_atocontratacao? @relation(fields: [id_sgi_curso_atocontratacao], references: [id_sgi_curso_atocontratacao])
+
+  @@index([id_sgi_cargo], name: "FK_sgi_curso_atocontratacao_cargo_sgi_cargo")
+  @@index([id_sgi_curso_atocontratacao], name: "FK_sgi_curso_atocontratacao_cargo_sgi_curso_atocontratacao")
+}
+
+model sgi_curso_meioambiente {
+  id_sgi_curso_meioambiente    Int                            @id @default(autoincrement())
+  curso                        String?                        @db.VarChar(255)
+  data_realizacao              DateTime?                      @db.Date
+  carga_horaria                String?                        @db.VarChar(150)
+  periodicidade                String?                        @db.VarChar(150)
+  publico_alvo                 String?                        @db.VarChar(150)
+  disponibilidade              String?                        @db.VarChar(100)
+  sgi_curso_meioambiente_cargo sgi_curso_meioambiente_cargo[]
+}
+
+model sgi_curso_meioambiente_cargo {
+  id_sgi_curso_meioambiente_cargo Int                     @id @default(autoincrement())
+  id_sgi_curso_meioambiente       Int?
+  id_sgi_cargo                    Int?
+  setor                           String?                 @db.VarChar(150)
+  cargo                           String?                 @db.VarChar(150)
+  curso                           String?                 @db.VarChar(150)
+  observacao                      String?                 @db.VarChar(50)
+  sgi_cargo                       sgi_cargo?              @relation(fields: [id_sgi_cargo], references: [id_sgi_cargo])
+  sgi_curso_meioambiente          sgi_curso_meioambiente? @relation(fields: [id_sgi_curso_meioambiente], references: [id_sgi_curso_meioambiente])
+
+  @@index([id_sgi_cargo], name: "FK_sgi_curso_meioambiente_cargo_sgi_cargo")
+  @@index([id_sgi_curso_meioambiente], name: "FK_sgi_curso_meioambiente_cargo_sgi_curso_meioambiente")
+}
+
+model sgi_curso_qualidade {
+  id_sgi_curso_qualidade    Int                         @id @default(autoincrement())
+  curso                     String?                     @db.VarChar(255)
+  data_realizacao           DateTime?                   @db.Date
+  validade_certificado      String?                     @db.VarChar(150)
+  carga_horaria             String?                     @db.VarChar(150)
+  periodicidade             String?                     @db.VarChar(150)
+  publico_alvo              String?                     @db.VarChar(250)
+  disponibilidade           String?                     @db.VarChar(150)
+  sgi_curso_qualidade_cargo sgi_curso_qualidade_cargo[]
+}
+
+model sgi_curso_qualidade_cargo {
+  id_sgi_curso_qualidade_cargo Int                  @id @default(autoincrement())
+  id_sgi_cargo                 Int?
+  id_sgi_curso_qualidade       Int?
+  setor                        String?              @db.VarChar(150)
+  cargo                        String?              @db.VarChar(150)
+  curso                        String?              @db.VarChar(150)
+  observacao                   String?              @db.VarChar(50)
+  sgi_cargo                    sgi_cargo?           @relation(fields: [id_sgi_cargo], references: [id_sgi_cargo])
+  sgi_curso_qualidade          sgi_curso_qualidade? @relation(fields: [id_sgi_curso_qualidade], references: [id_sgi_curso_qualidade])
+
+  @@index([id_sgi_cargo], name: "FK_sgi_curso_qualidade_cargo_sgi_cargo")
+  @@index([id_sgi_curso_qualidade], name: "FK_sgi_curso_qualidade_cargo_sgi_curso_qualidade")
+}
+
+model sgi_curso_sso {
+  id_sgi_curso_sso         Int                   @id @default(autoincrement())
+  curso                    String?               @db.VarChar(255)
+  data_realizacao          DateTime?             @db.Date
+  carga_horaria            String?               @db.VarChar(200)
+  carga_horaria_reciclagem String?               @db.VarChar(255)
+  periodicidade            String?               @db.VarChar(255)
+  publico_alvo             String?               @db.VarChar(255)
+  disponibilidade          String?               @db.VarChar(100)
+  sgi_curso_sso_cargo      sgi_curso_sso_cargo[]
+}
+
+model sgi_curso_sso_cargo {
+  id_sgi_curso_sso_cargo Int            @id @default(autoincrement())
+  id_sgi_cargo           Int?
+  id_sgi_curso_sso       Int?
+  setor                  String?        @db.VarChar(80)
+  cargo                  String?        @db.VarChar(255)
+  curso                  String?        @db.VarChar(255)
+  observacao             String?        @db.VarChar(80)
+  status_curso           String?        @db.VarChar(30)
+  sgi_cargo              sgi_cargo?     @relation(fields: [id_sgi_cargo], references: [id_sgi_cargo])
+  sgi_curso_sso          sgi_curso_sso? @relation(fields: [id_sgi_curso_sso], references: [id_sgi_curso_sso])
+
+  @@index([id_sgi_cargo], name: "FK_sgi_curso_sso_cargo_sgi_cargo")
+  @@index([id_sgi_curso_sso], name: "FK_sgi_curso_sso_cargo_sgi_curso_sso")
+}
+
+model sgi_cursos {
+  id_sgi_cursos      Int     @id @default(autoincrement())
+  matriz             String? @db.VarChar(50)
+  curso              String? @db.VarChar(255)
+  carga_horaria      String? @db.VarChar(255)
+  periodicidade_dias String? @db.VarChar(11)
+  responsavel_curso  String? @db.VarChar(50)
+  tipo_curso         String? @db.VarChar(50)
+  questionario       String? @db.VarChar(50)
+}
+
+model sgi_cursos_conteudo {
+  id_sgi_cursos_conteudo Int     @id @default(autoincrement())
+  id_sgi_cursos          Int?
+  conteudo               String? @db.Text
+}
+
+model sgi_destinatario_compra {
+  id_sgi_destinatario_compra Int     @id @default(autoincrement())
+  local_aplicacao            String? @db.VarChar(50)
+  rua                        String? @db.VarChar(80)
+  cep_entrega                String? @db.VarChar(10)
+  cidade                     String? @db.VarChar(20)
+  fone                       String? @db.VarChar(15)
+  email                      String? @db.VarChar(80)
+  cnpj                       String? @db.VarChar(20)
+  ie                         String? @db.VarChar(20)
+}
+
+model sgi_documentacao_colaboradores {
+  id_sgi_documentacao_colaboradores Int       @id @default(autoincrement())
+  id_sgi_colaboradores              Int?
+  matricula                         Int?
+  arquivo                           Bytes?
+  nome_arquivo                      String?   @db.VarChar(50)
+  tipo_arquivo                      String?   @db.VarChar(50)
+  data_atualizacao                  DateTime? @db.DateTime(0)
+  criado_por                        String?   @db.VarChar(50)
+  vencimento                        DateTime? @db.DateTime(0)
+  observacao                        String?   @db.VarChar(255)
+  categoria                         String?   @db.VarChar(15)
+}
+
+model sgi_documentacao_colaboradores_tipo_documento {
+  id_sgi_documentacao_colaboradores_tipo_documento Int     @id @default(autoincrement())
+  tipo_documento                                   String? @db.VarChar(50)
+}
+
+model sgi_epi {
+  id_sgi_epi           Int                @id @default(autoincrement())
+  id_sgi_colaboradores Int?
+  data_hora            DateTime?          @db.Date
+  nome_arquivo         String?            @db.VarChar(50)
+  arquivo              Bytes?
+  sgi_colaboradores    sgi_colaboradores? @relation(fields: [id_sgi_colaboradores], references: [id_sgi_colaboradores])
+
+  @@index([id_sgi_colaboradores], name: "id_sgi_colaboradores")
+}
+
+model sgi_estoque_detalhe_produto {
+  id_sgi_estoque_detalhe_produto Int       @id @default(autoincrement())
+  cod_produto                    String?   @db.VarChar(15)
+  qtd_produto                    Int?
+  valor_unitario                 Decimal?  @db.Decimal(10, 2)
+  fornecedor                     String?   @db.VarChar(50)
+  nf                             String?   @db.VarChar(12)
+  ultima_entrada                 DateTime? @db.DateTime(0)
+  ultima_saida                   DateTime? @db.DateTime(0)
+  observacao_produto             String?   @db.Text
+  num_ordem_compra               String?   @db.VarChar(50)
+  nota_fiscal_compra             String?   @db.VarChar(50)
+  status_produto                 String?   @db.VarChar(20)
+  valor_final                    Decimal?  @db.Decimal(10, 2)
+  num_solic_compra_itens         Int?
+  num_solicitacao_compra         Int?
+
+  @@index([num_solicitacao_compra], name: "num_solicitacao_compra")
+  @@index([qtd_produto], name: "qtd_produto")
+  @@index([valor_unitario], name: "valor_unitario")
+}
+
+model sgi_estoque_detalhe_produto2 {
+  id_sgi_estoque_detalhe_produto Int       @id @default(autoincrement())
+  cod_produto                    String?   @db.VarChar(15)
+  qtd_produto                    Int?
+  valor_unitario                 Decimal?  @db.Decimal(10, 2)
+  fornecedor                     String?   @db.VarChar(50)
+  nf                             String?   @db.VarChar(12)
+  ultima_entrada                 DateTime? @db.DateTime(0)
+  ultima_saida                   DateTime? @db.DateTime(0)
+  observacao_produto             String?   @db.Text
+  num_ordem_compra               String?   @db.VarChar(50)
+  nota_fiscal_compra             String?   @db.VarChar(50)
+  status_produto                 String?   @db.VarChar(20)
+  valor_final                    Decimal?  @db.Decimal(10, 2)
+  num_solic_compra_itens         Int?
+  num_solicitacao_compra         Int?
+}
+
+model sgi_estoque_detalhe_produto_original {
+  id_sgi_estoque_detalhe_produto Int       @id @default(autoincrement())
+  cod_produto                    String?   @db.VarChar(15)
+  qtd_produto                    Int?
+  valor_unitario                 Decimal?  @db.Decimal(10, 2)
+  fornecedor                     String?   @db.VarChar(50)
+  nf                             String?   @db.VarChar(12)
+  ultima_entrada                 DateTime? @db.DateTime(0)
+  ultima_saida                   DateTime? @db.DateTime(0)
+  observacao_produto             String?   @db.Text
+  num_ordem_compra               String?   @db.VarChar(50)
+  nota_fiscal_compra             String?   @db.VarChar(50)
+  status_produto                 String?   @db.VarChar(20)
+  valor_final                    Decimal?  @db.Decimal(10, 2)
+  num_solic_compra_itens         Int?
+  num_solicitacao_compra         Int?
+}
+
+model sgi_estoque_produto {
+  id_sgi_estoque_produto Int       @id @default(autoincrement())
+  setor                  String?   @db.VarChar(50)
+  cod_produto            String?   @unique @db.VarChar(15)
+  nome_produto           String?   @db.VarChar(80)
+  cadastrado_por         String?   @db.VarChar(50)
+  data_hora_cadastro     DateTime? @db.DateTime(0)
+}
+
+model sgi_estoque_produto_copy_backup {
+  id_sgi_estoque_produto Int       @id @default(autoincrement())
+  setor                  String?   @db.VarChar(50)
+  cod_produto            String?   @db.VarChar(15)
+  nome_produto           String?   @db.VarChar(80)
+  cadastrado_por         String?   @db.VarChar(50)
+  data_hora_cadastro     DateTime? @db.DateTime(0)
+
+  @@index([cod_produto], name: "cod_produto")
+}
+
+model sgi_faltas {
+  id_sgi_falta        Int       @id @default(autoincrement())
+  matricula           String?   @db.VarChar(50)
+  colaborador         String?   @db.VarChar(50)
+  unidade             String?   @db.VarChar(50)
+  data_ocorrencia     DateTime? @db.DateTime(0)
+  superior_imediato   String?   @db.VarChar(50)
+  ocorrencia          String?   @db.VarChar(50)
+  motivo              String?   @db.VarChar(50)
+  arquivo             Bytes?
+  nome_arquivo        String?   @db.VarChar(50)
+  apreciacao_superior String?   @db.VarChar(50)
+  observacao          String?   @db.VarChar(350)
+  assinatura          Bytes?
+  data_assinatura     DateTime? @db.Date
+  usuario             String?   @db.VarChar(50)
+  dias_falta          Int?
+}
+
+model sgi_faltas_apreciacao_cadastro {
+  id_sgi_faltas_apreciacao_cadastro Int     @id @default(autoincrement())
+  apreciacao                        String? @db.VarChar(50)
+}
+
+model sgi_faltas_motivos_cadastro {
+  id_sgi_faltas_motivos_cadastro Int     @id @default(autoincrement())
+  motivo                         String? @db.VarChar(50)
+}
+
+model sgi_faltas_superior_cadastro {
+  id_sgi_faltas_superior_cadastro Int     @id @default(autoincrement())
+  superior                        String? @db.VarChar(50)
+  contato                         String? @db.VarChar(30)
+}
+
+model sgi_folha_pagamento {
+  id_sgi_folha_pagamento Int       @id @default(autoincrement())
+  mes                    DateTime? @db.Date
+  descricao              String?   @db.VarChar(50)
+  unidade                String?   @db.VarChar(50)
+  nmr_funcionarios       Int?
+  tipo                   String?   @db.VarChar(50)
+  valor                  Decimal?  @db.Decimal(10, 2)
+  observacao             String?   @db.VarChar(80)
+}
+
+model sgi_folha_pagamento_tipo {
+  id_sgi_folha_pagamento_tipo Int     @id @default(autoincrement())
+  descricao                   String? @db.VarChar(50)
+  tipo                        String? @db.VarChar(50)
+}
+
+model sgi_fornecedor {
+  id_sgi_fornecedor   Int     @id @default(autoincrement())
+  fornecedor          String? @db.VarChar(15)
+  cnpj                String? @db.VarChar(15)
+  endereco            String? @db.VarChar(80)
+  cep                 String? @db.VarChar(8)
+  condicoes_pagamento String? @db.VarChar(30)
+  prazo_pagamento     String? @db.VarChar(20)
+  unidade             String? @db.VarChar(50)
+}
+
+model sgi_frota_cadastro {
+  id_sgi_frota_cadastro Int     @id @default(autoincrement())
+  frota                 String? @unique @db.VarChar(10)
+  placa                 String? @db.VarChar(10)
+  fabricante_modelo     String? @db.VarChar(100)
+  ano_fabricacao        Int?
+  ano_modelo            Int?
+  chassi                String? @db.VarChar(20)
+  renavam               String? @db.VarChar(11)
+}
+
+model sgi_frota_carretas_documentos {
+  id_sgi_frota_documentos Int       @id @default(autoincrement())
+  placa                   String?   @db.VarChar(15)
+  operacao                String?   @db.VarChar(20)
+  renavam                 String?   @db.VarChar(50)
+  chassi                  String?   @db.VarChar(50)
+  tipo                    String?   @db.VarChar(20)
+  marca                   String?   @db.VarChar(50)
+  modelo                  String?   @db.VarChar(50)
+  cor                     String?   @db.VarChar(20)
+  ano                     Int?
+  vencimento              DateTime? @db.Date
+  documento               Bytes?
+  nome_documento          String?   @db.VarChar(50)
+}
+
+model sgi_frota_cavalo_documentos {
+  id_sgi_frota_cavalo_documentos Int       @id @default(autoincrement())
+  placa                          String?   @db.VarChar(50)
+  propriedade                    String?   @db.VarChar(50)
+  uf                             String?   @db.VarChar(50)
+  renavam                        String?   @db.VarChar(50)
+  chassi                         String?   @db.VarChar(50)
+  tipo                           String?   @db.VarChar(50)
+  marca                          String?   @db.VarChar(50)
+  modelo                         String?   @db.VarChar(50)
+  cor                            String?   @db.VarChar(50)
+  ano                            Int?      @db.Year
+  vencimento                     DateTime? @db.Date
+  documento                      Bytes?
+  nome_documento                 String?   @db.VarChar(50)
+}
+
+model sgi_incidentes_rai_cat {
+  id_sgi_incidentes_rai_cat        Int     @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal Int?
+  envolvido                        String? @db.VarChar(50)
+  emissao_cat                      String? @db.VarChar(50)
+  apresentacao_cat                 String? @db.VarChar(50)
+  cat_descricao                    String? @db.Text
+  evidencias_reuniao               String? @db.Text
+}
+
+model sgi_incidentes_rai_conclusao {
+  id_sgi_incidentes_rai_conclusao  Int       @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal Int?
+  causa                            String?   @db.VarChar(50)
+  medida_proposta                  String?   @db.Text
+  responsavel                      String?   @db.VarChar(50)
+  empresa                          String?   @db.VarChar(50)
+  prazo                            DateTime? @db.Date
+  status_prazo                     String?   @db.VarChar(50)
+}
+
+model sgi_incidentes_rai_depoimento {
+  id_sgi_incidentes_rai_depoimento   Int     @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal   Int?
+  envolvido                          String? @db.VarChar(50)
+  depoimento                         String? @db.Text
+  severidade                         String? @db.VarChar(50)
+  severidade_descricao               String? @db.Text
+  tipo_incidente_pessoal             String? @db.VarChar(100)
+  tipo_incidente_impessoal           String? @db.VarChar(100)
+  tipo_incidente_descricao           String? @db.Text
+  consequencia_evento                String? @db.Text
+  servico_executado_momento_acidente String? @db.VarChar(50)
+  linha_do_tempo                     String? @db.Text
+}
+
+model sgi_incidentes_rai_fator_de_risco_cadastro {
+  id_sgi_incidentes_rai_fator_de_risco_cadastro Int     @id @default(autoincrement())
+  fator_de_risco                                String? @db.VarChar(150)
+  tipo_fator_de_risco                           String? @db.VarChar(150)
+}
+
+model sgi_incidentes_rai_levantamento_causas {
+  id_sgi_incidentes_rai_levantamento_causas Int     @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal          Int?
+  registro_fotografico                      Bytes?
+  itens                                     String? @db.VarChar(50)
+  especificar                               String? @db.VarChar(50)
+  nao_conformidade                          String? @db.Text
+  fator_de_risco                            String? @db.VarChar(100)
+}
+
+model sgi_incidentes_rai_levantamento_causas_cadastro {
+  id_sgi_incidentes_rai_levantamento_causas_cadastro Int     @id @default(autoincrement())
+  causa                                              String? @db.VarChar(50)
+}
+
+model sgi_incidentes_rai_lista_prescenca {
+  id_sgi_incidentes_rai_lista_prescenca Int     @id @default(autoincrement())
+  sgi_incidentes_repi_principal         Int?
+  area                                  String? @db.VarChar(50)
+  nome                                  String? @db.VarChar(50)
+  empresa                               String? @db.VarChar(50)
+  cargo                                 String? @db.VarChar(50)
+  assinatura                            Bytes?
+}
+
+model sgi_incidentes_rai_lista_prescenca_principal {
+  sgi_incidentes_rai_lista_prescenca_principal Int       @id @default(autoincrement())
+  sgi_incidentes_repi_principal                Int?
+  local                                        String?   @db.VarChar(50)
+  data_hora                                    DateTime? @db.DateTime(0)
+}
+
+model sgi_incidentes_rai_principal {
+  id_sgi_incidentes_rai_principal  Int     @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal Int?
+  comunicacao_incidente            String? @db.VarChar(50)
+  comunicacao_incidente_descricao  String? @db.Text
+  conclusao                        String? @db.Text
+}
+
+model sgi_incidentes_rai_procedimentos {
+  id_sgi_incidentes_rai_procedimentos Int     @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal    Int?
+  procedimento                        String? @db.VarChar(100)
+  procedimento_opcao                  String? @db.VarChar(50)
+  procedimento_descricao              String? @db.Text
+}
+
+model sgi_incidentes_rai_procedimentos_cadastro {
+  id_sgi_incidentes_rai_procedimentos_cadastro Int     @id @default(autoincrement())
+  procedimento                                 String? @db.Text
+}
+
+model sgi_incidentes_rai_tipo_incidente_cadastro {
+  id_sgi_incidentes_rai_tipo_incidente_cadastro Int     @id @default(autoincrement())
+  tipo_incidente                                String? @db.VarChar(50)
+  incidente                                     String? @db.VarChar(100)
+}
+
+model sgi_incidentes_repi_acao {
+  id_sgi_incidentes_repi_acao      Int     @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal Int?
+  acao                             String? @db.Text
+  executante                       String? @db.VarChar(50)
+  empresa                          String? @db.VarChar(50)
+  elaborador_por                   String? @db.VarChar(50)
+  cargo                            String? @db.VarChar(50)
+  contato                          String? @db.VarChar(50)
+}
+
+model sgi_incidentes_repi_envolvidos {
+  id_sgi_incidentes_repi_envolvidos Int       @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal  Int?
+  nome                              String?   @db.VarChar(50)
+  idade                             Int?
+  nivel_instrucao                   String?   @db.VarChar(50)
+  cargo                             String?   @db.VarChar(50)
+  empresa                           String?   @db.VarChar(50)
+  tempo_cargo                       String?   @db.VarChar(50)
+  tempo_empresa                     String?   @db.VarChar(50)
+  descricao_incidente_individual    String?   @db.Text
+  parte_atingida                    String?   @db.VarChar(50)
+  identificacao                     String?   @db.VarChar(50)
+  servico_medico                    String?   @db.VarChar(50)
+  hora_servico_medico               DateTime? @db.Time(0)
+}
+
+model sgi_incidentes_repi_foto {
+  id_sgi_incidentes_repi_foto      Int    @id @default(autoincrement())
+  id_sgi_incidentes_repi_principal Int?
+  registro_fotografico             Bytes?
+}
+
+model sgi_incidentes_repi_principal {
+  id_sgi_incidentes_repi_principal Int       @id @default(autoincrement())
+  data_hora_incidente              DateTime? @db.DateTime(0)
+  hora_trabalhada                  String?   @db.VarChar(50)
+  tipo_atividade                   String?   @db.VarChar(50)
+  local_incidente                  String?   @db.VarChar(50)
+  classificacao_incidente          String?   @db.VarChar(50)
+  empresa_envolvida                String?   @db.VarChar(50)
+  empresa_responsavel              String?   @db.VarChar(50)
+  descricao_incidente_geral        String?   @db.Text
+}
+
+model sgi_inspecao_detalhe {
+  id_sgi_inspecao_detalhe   Int       @id @default(autoincrement())
+  id_sgi_inspecao_principal Int?
+  condicao                  Bytes?    @db.MediumBlob
+  descricao                 String?   @db.Text
+  correcao                  String?   @db.Text
+  prazo                     DateTime? @db.DateTime(0)
+  responsavel               String?   @db.VarChar(50)
+  situacao                  String?   @db.VarChar(50)
+  observacao_situacao       String?   @db.Text
+}
+
+model sgi_inspecao_participantes {
+  id_sgi_inspecao_participantes Int     @id @default(autoincrement())
+  id_sgi_inspecao_principal     Int?
+  participantes                 String? @db.VarChar(50)
+}
+
+model sgi_inspecao_principal {
+  id_sgi_inspecao_principal Int       @id @default(autoincrement())
+  responsavel_inspecao      String?   @db.VarChar(50)
+  data_inspecao             DateTime? @db.DateTime(0)
+  local                     String?   @db.VarChar(50)
+  item                      String?   @db.VarChar(50)
+  tipo_inspecao             String?   @db.VarChar(50)
+  status_inspecao           String?   @db.VarChar(50)
+}
+
+model sgi_inventario_estoque {
+  id_sgi_inventario_estoque Int       @id @default(autoincrement())
+  data_inventario           DateTime? @db.DateTime(0)
+  nome_produto              String?   @db.VarChar(50)
+  cod_produto               String?   @db.VarChar(50)
+  setor                     String?   @db.VarChar(50)
+  unidade                   String?   @db.VarChar(50)
+  quantidade                Int?
+  quantidade_inventario     Int?
+  diferenca                 Int?
+  realizado_por             String?   @db.VarChar(50)
+  status_inventario         String?   @db.VarChar(50)
+  valor                     Decimal?  @db.Decimal(10, 2)
+  assinatura                Bytes?
+  obs                       String?   @db.Text
+}
+
+model sgi_opacimetro {
+  id_sgi_opacimetro      Int       @id @default(autoincrement())
+  placa                  String?   @db.VarChar(10)
+  data_revisao_concluida DateTime? @db.DateTime(0)
+  status_opacimetro      String?   @db.VarChar(20)
+  data_ultima_revisao    DateTime? @db.DateTime(0)
+  data_proxima_revisao   DateTime? @db.DateTime(0)
+  dias_restantes         String?   @db.VarChar(5)
+  documentos             Bytes?
+  documentos_nome        String?   @db.VarChar(50)
+  responsavel            String?   @db.VarChar(20)
+  opacimetro             String?   @db.VarChar(50)
+  data_atualizacao       DateTime? @db.DateTime(0)
+}
+
+model sgi_opacimetro_empilhadeira {
+  id_sgi_opacimetro_empilhadeira Int       @id @default(autoincrement())
+  placa                          String?   @db.VarChar(10)
+  data_revisao_concluida         DateTime? @db.DateTime(0)
+  status_opacimetro              String?   @db.VarChar(20)
+  data_ultima_revisao            DateTime? @db.DateTime(0)
+  data_proxima_revisao           DateTime? @db.DateTime(0)
+  dias_restantes                 String?   @db.VarChar(5)
+  documentos                     Bytes?
+  documentos_nome                String?   @db.VarChar(50)
+  responsavel                    String?   @db.VarChar(20)
+  opacimetro                     String?   @db.VarChar(50)
+}
+
+model sgi_ordem_compra {
+  id_sgi_ordem_compra                  Int                                    @id @default(autoincrement())
+  id_sgi_solicitacao_compra            Int?
+  data_previsao_entrega                DateTime?                              @db.Date
+  data_hora_aprovacao                  DateTime?                              @db.DateTime(0)
+  data_ordem_compra                    DateTime?                              @db.Date
+  data_compra                          DateTime?                              @db.Date
+  data_recebimento                     DateTime?                              @db.Date
+  data_retirada                        DateTime?                              @db.DateTime(0)
+  data_previsao_pagamento              DateTime?                              @db.Date
+  local_aplicacao                      String?                                @db.VarChar(50)
+  num_nota_fiscal                      String?                                @db.VarChar(80)
+  rua                                  String?                                @db.VarChar(50)
+  cep_entrega                          String?                                @db.VarChar(8)
+  cidade                               String?                                @db.VarChar(20)
+  fone                                 String?                                @db.VarChar(15)
+  email                                String?                                @db.VarChar(80)
+  email_nf                             String?                                @db.VarChar(80)
+  cnpj                                 String?                                @db.VarChar(20)
+  ie                                   String?                                @db.VarChar(20)
+  fornecedor                           String?                                @db.VarChar(80)
+  endereco                             String?                                @db.MediumText
+  cep                                  String?                                @db.VarChar(8)
+  status_ordem_compra                  String?                                @db.VarChar(50)
+  observacao                           String?                                @db.VarChar(15)
+  prazo_pagamento                      String?                                @db.VarChar(15)
+  setor                                String?                                @db.VarChar(30)
+  valor                                Decimal?                               @db.Decimal(10, 2)
+  valor_setor                          Decimal?                               @db.Decimal(10, 2)
+  valor_setor_utilizado                Decimal?                               @db.Decimal(10, 2)
+  valor_setor_saldo                    Decimal?                               @db.Decimal(10, 2)
+  valor_setor_final                    Decimal?                               @db.Decimal(10, 2)
+  usuario_recebedor                    String?                                @db.VarChar(50)
+  assinatura_recebedor                 Bytes?
+  responsavel_aprovacao                String?                                @db.VarChar(50)
+  usuario_responsavel                  String?                                @db.VarChar(50)
+  nota_fiscal                          Bytes?
+  responsavel_inspecao                 String?                                @db.VarChar(50)
+  entrega_conforme                     String?                                @db.VarChar(4)
+  obs_entrega                          String?                                @db.Text
+  nota_fiscal_nome_arquivo             String?                                @db.VarChar(50)
+  data_hora_cancelamento               DateTime?                              @db.DateTime(0)
+  responsavel_cancelamento             String?                                @db.VarChar(80)
+  motivo_cancelamento                  String?                                @db.TinyText
+  sgi_solicitacao_compra               sgi_solicitacao_compra?                @relation(fields: [id_sgi_solicitacao_compra], references: [id_sgi_solicitacao_compra])
+  sgi_ordem_compra_data_pagamento      sgi_ordem_compra_data_pagamento[]
+  sgi_ordem_compra_data_pagamento_copy sgi_ordem_compra_data_pagamento_copy[]
+  sgi_ordem_compra_itens               sgi_ordem_compra_itens[]
+  sgi_ordem_compra_nota_fiscal         sgi_ordem_compra_nota_fiscal[]
+
+  @@index([id_sgi_solicitacao_compra], name: "id_sgi_solicitacao_compra")
+}
+
+model sgi_ordem_compra_data_pagamento {
+  id_sgi_ordem_compra_data_pagamento Int               @id @default(autoincrement())
+  id_sgi_ordem_compra                Int?
+  data_previsao_pagamento            DateTime?         @db.Date
+  valor                              Decimal?          @db.Decimal(10, 3)
+  id_sgi_solicitacao_compra          Int?
+  id_ordem_servico                   Int?
+  data_parcelado_autorizado          DateTime?         @db.Date
+  n_parcela                          Int?
+  n_total_parcelas                   Int?
+  sgi_ordem_compra                   sgi_ordem_compra? @relation(fields: [id_sgi_ordem_compra], references: [id_sgi_ordem_compra])
+
+  @@index([id_sgi_ordem_compra], name: "FK_sgi_ordem_compra_data_pagamento_sgi_ordem_compra")
+}
+
+model sgi_ordem_compra_data_pagamento_copy {
+  id_sgi_ordem_compra_data_pagamento Int               @id @default(autoincrement())
+  id_sgi_ordem_compra                Int?
+  data_previsao_pagamento            DateTime?         @db.Date
+  valor                              Decimal?          @db.Decimal(10, 3)
+  id_sgi_solicitacao_compra          Int?
+  id_ordem_servico                   Int?
+  sgi_ordem_compra                   sgi_ordem_compra? @relation(fields: [id_sgi_ordem_compra], references: [id_sgi_ordem_compra])
+
+  @@index([id_sgi_ordem_compra], name: "FK_sgi_ordem_compra_data_pagamento_sgi_ordem_compra")
+}
+
+model sgi_ordem_compra_itens {
+  id_sgi_ordem_compra_itens       Int                           @id @default(autoincrement())
+  id_sgi_ordem_compra             Int?
+  id_sgi_solicitacao_compra_itens Int?
+  id_sgi_solicitacao_compra       Int?
+  quantidade                      Int
+  saldo_entrega                   Int
+  descricao                       String?                       @db.VarChar(80)
+  especificacao_adicional         String?                       @db.VarChar(150)
+  valor_unitario                  Decimal?                      @db.Decimal(10, 2)
+  total                           Decimal?                      @db.Decimal(10, 2)
+  entrega                         String?                       @db.VarChar(30)
+  saldo                           Int?
+  visualizar                      Decimal?                      @db.Decimal(10, 2)
+  sgi_ordem_compra                sgi_ordem_compra?             @relation(fields: [id_sgi_ordem_compra], references: [id_sgi_ordem_compra])
+  sgi_solicitacao_compra          sgi_solicitacao_compra?       @relation(fields: [id_sgi_solicitacao_compra], references: [id_sgi_solicitacao_compra])
+  sgi_solicitacao_compra_itens    sgi_solicitacao_compra_itens? @relation(fields: [id_sgi_solicitacao_compra_itens], references: [id_sgi_solicitacao_compra_itens])
+
+  @@index([id_sgi_ordem_compra], name: "id_sgi_ordem_de_compra")
+  @@index([id_sgi_solicitacao_compra], name: "id_sgi_solicitacao_compra")
+  @@index([id_sgi_solicitacao_compra_itens], name: "id_sgi_solicitacao_compra_itens")
+}
+
+model sgi_ordem_compra_nota_fiscal {
+  id_sgi_ordem_compra_nota_fiscal Int               @id @default(autoincrement())
+  id_sgi_ordem_compra             Int?
+  nome_nota_fiscal                String?           @db.VarChar(80)
+  arquivo_nota_fiscal             Bytes?
+  sgi_ordem_compra                sgi_ordem_compra? @relation(fields: [id_sgi_ordem_compra], references: [id_sgi_ordem_compra])
+
+  @@index([id_sgi_ordem_compra], name: "FK_sgi_ordem_compra_nota_fiscal_sgi_ordem_compra")
+}
+
+model sgi_ordem_saida {
+  id_sgi_ordem_saida        Int                     @id @default(autoincrement())
+  id_sgi_solicitacao_compra Int?
+  usuario_recebedor         String?                 @db.VarChar(80)
+  assinatura_recebedor      Bytes?
+  data_recebimento          DateTime?               @db.DateTime(0)
+  responsavel_inspecao      String?                 @db.VarChar(50)
+  data_inspecao             DateTime?               @db.Date
+  status_ordem_saida        String?                 @db.VarChar(50)
+  descricao_item            String?                 @db.VarChar(50)
+  qtd_itens                 Int?
+  sgi_solicitacao_compra    sgi_solicitacao_compra? @relation(fields: [id_sgi_solicitacao_compra], references: [id_sgi_solicitacao_compra])
+
+  @@index([id_sgi_solicitacao_compra], name: "FK_sgi_ordem_saida_sgi_solicitacao_compra")
+}
+
+model sgi_ordem_servicos {
+  id_sgi_ordem_servico    Int       @id @default(autoincrement())
+  status_ordem_servicos   String?   @db.VarChar(50)
+  placa_veiculo           String?   @db.VarChar(10)
+  tipo_manutencao         String?   @db.VarChar(15)
+  falhaocorrida           String?   @db.VarChar(50)
+  local_manutencao        String?   @db.VarChar(50)
+  gestor_manutencao       String?   @db.VarChar(80)
+  mecanico_responsavel    String?   @db.VarChar(80)
+  motorista_operador      String?   @db.VarChar(80)
+  horimetro               String?   @db.VarChar(10)
+  data_hora_abertura      DateTime? @db.DateTime(0)
+  data_hora_fechamento    DateTime? @db.DateTime(0)
+  tempo_em_manutencao     Int?
+  analise_inicial         String?   @db.Text
+  descricao_manutencao    String?   @db.Text
+  necessario_peca         String?   @db.VarChar(3)
+  descricao_pecas         String?   @db.Text
+  responsavel_abertura_os String?   @db.VarChar(25)
+  data_hora_inserido      DateTime? @default(now()) @db.DateTime(0)
+  unidade                 String?   @db.Char(15)
+  id_solicitacao_compra   Int?
+
+  @@index([placa_veiculo], name: "placa_veiculo")
+}
+
+model sgi_ordem_servicos_cadastro_empilhadeiras {
+  id_sgi_ordem_servicos_cadastro_empilhadeiras Int     @id @default(autoincrement())
+  empilhadeira                                 String? @db.VarChar(50)
+  novo_tag                                     String? @db.VarChar(20)
+  tipo_emp                                     String? @db.VarChar(50)
+  marca                                        String? @db.VarChar(80)
+  modelo                                       String? @db.VarChar(80)
+  ano                                          Int?
+  serie                                        String? @db.VarChar(80)
+  galpao_secao                                 String? @db.VarChar(80)
+  informacoes                                  String? @db.VarChar(80)
+  unidade                                      String? @db.VarChar(10)
+  arquivo                                      String? @db.VarChar(50)
+  url                                          String? @db.VarChar(100)
+
+  @@index([empilhadeira], name: "empilhadeira")
+}
+
+model sgi_ordem_servicos_cadastro_frota {
+  id_sgi_ordem_servicos_cadastro_frota Int     @id @default(autoincrement())
+  placa                                String? @db.VarChar(10)
+  campoA                               String? @db.VarChar(50)
+  chassi                               String? @db.VarChar(20)
+  marca                                String? @db.VarChar(80)
+  ano                                  Int?
+  campoB                               String? @db.VarChar(50)
+  tipo_frota                           String? @db.VarChar(50)
+  unidade                              String? @db.VarChar(10)
+  arquivo                              String? @db.VarChar(100)
+  url                                  String? @db.VarChar(100)
+
+  @@index([placa], name: "placa")
+}
+
+model sgi_ordem_servicos_disponibilidade {
+  id_sgi_ordem_servicos_disponibilidade Int       @id @default(autoincrement())
+  id_sgi_ordem_servicos                 Int       @default(0)
+  placa                                 String?   @db.VarChar(50)
+  abertura                              DateTime? @db.DateTime(0)
+  fechamento                            DateTime? @db.DateTime(0)
+  disponibilidade                       Decimal?  @db.Decimal(10, 2)
+  indisponibilidade                     Decimal?  @db.Decimal(10, 2)
+}
+
+model sgi_ordem_servicos_falha_ocorrida {
+  id_sgi_ordem_servicos_falha_ocorrida Int     @id @default(autoincrement())
+  falha_ocorrida                       String? @db.VarChar(50)
+  unidade                              String? @db.VarChar(50)
+}
+
+model sgi_ordem_servicos_gestor_manutencao {
+  id_sgi_ordem_servicos_gestor_manutencao Int     @id @default(autoincrement())
+  gestor_manutencao                       String? @db.VarChar(80)
+  email                                   String? @db.VarChar(80)
+  unidade                                 String? @db.VarChar(5)
+}
+
+model sgi_ordem_servicos_local_manutencao {
+  id_sgi_ordem_servicos_local_manutencao Int     @id @default(autoincrement())
+  local_manutencao                       String? @db.VarChar(50)
+  unidade                                String? @db.VarChar(50)
+}
+
+model sgi_ordem_servicos_mecanicos {
+  id_sgi_ordem_servicos_mecanicos Int     @id @default(autoincrement())
+  mecanico                        String? @db.VarChar(50)
+  unidade                         String? @db.VarChar(50)
+}
+
+model sgi_ordem_servicos_motorista_operador {
+  id_sgi_ordem_servicos_motorista_operador Int     @id @default(autoincrement())
+  motorista_operador                       String? @db.VarChar(50)
+  unidade                                  String? @db.VarChar(50)
+}
+
+model sgi_ordem_servicos_oficinas {
+  id_sgi_ordem_servicos_oficinas Int     @id @default(autoincrement())
+  local_manutencao               String? @db.VarChar(50)
+  unidade                        String? @db.VarChar(50)
+}
+
+model sgi_ordem_servicos_placas {
+  id_sgi_ordem_servicos_placas Int     @id @default(autoincrement())
+  placa_equipamento            String? @db.VarChar(10)
+  tipo                         String? @db.VarChar(15)
+  unidade                      String? @db.VarChar(50)
+}
+
+model sgi_os {
+  id_sgi_os            Int                @id @default(autoincrement())
+  id_sgi_colaboradores Int?
+  data_hora            DateTime?          @db.Date
+  nome_arquivo         String?            @db.VarChar(50)
+  arquivo              Bytes?
+  sgi_colaboradores    sgi_colaboradores? @relation(fields: [id_sgi_colaboradores], references: [id_sgi_colaboradores])
+
+  @@index([id_sgi_colaboradores], name: "id_sgi_colaboradores")
+}
+
+model sgi_pc_email {
+  id_sgi_pc_email Int     @id @default(autoincrement())
+  usuario         String? @db.VarChar(50)
+  email           String? @db.VarChar(100)
+  unidade         String? @db.VarChar(10)
+}
+
+model sgi_pc_email_ordem_aprovada {
+  id_sgi_pc_email Int     @id @default(autoincrement())
+  usuario         String? @db.VarChar(50)
+  email           String? @db.VarChar(100)
+  unidade         String? @db.VarChar(5)
+}
+
+model sgi_pc_email_ordem_compra {
+  id_sgi_pc_email_ordem_compra Int     @id @default(autoincrement())
+  usuario                      String? @db.VarChar(50)
+  email                        String? @db.VarChar(100)
+  unidade                      String? @db.VarChar(10)
+}
+
+model sgi_plano_de_acao {
+  id_sgi_plano_de_acao Int       @id @default(autoincrement())
+  documento            String?   @db.VarChar(50)
+  acao                 String?   @db.Text
+  por_que              String?   @db.Text
+  como                 String?   @db.Text
+  quem                 String?   @db.VarChar(50)
+  onde                 String?   @db.VarChar(50)
+  prazo                DateTime? @db.Date
+  vencimento           DateTime? @db.Date
+  status_plano_de_acao String?   @db.VarChar(50)
+  observacao           String?   @db.Text
+  unidade              String?   @db.VarChar(50)
+}
+
+model sgi_preventiva_checklist_itens {
+  id_sgi_preventiva_checklist_itens Int     @id @default(autoincrement())
+  classificacao                     String? @db.VarChar(50)
+  descricao                         String? @db.VarChar(150)
+  tipo_motor                        String? @db.VarChar(20)
+  revisao_hrs                       Int?
+}
+
+model sgi_preventiva_checklist_principal {
+  id_sgi_preventiva_checklist_principal    Int                                        @id @default(autoincrement())
+  frota                                    String?                                    @db.VarChar(50)
+  tipo_motor                               String?                                    @db.VarChar(50)
+  horimetro                                Int?
+  data_manuntencao                         DateTime?                                  @db.DateTime(0)
+  numero_os                                Int?
+  mecanico                                 String?                                    @db.VarChar(80)
+  tipo_manuntencao_hora                    String?                                    @db.VarChar(50)
+  hora_inicial                             DateTime?                                  @db.Time(0)
+  hora_final                               DateTime?                                  @db.Time(0)
+  status_checklist                         String?                                    @db.VarChar(50)
+  nome_tecnico_responsavel                 String?                                    @db.VarChar(80)
+  nome_encarregado_manuntencao             String?                                    @db.VarChar(80)
+  tecnico_responsavel                      Bytes?
+  encarregado_manuntencao                  Bytes?
+  data_hora_finalizacao_checklist          DateTime?                                  @db.DateTime(0)
+  sgi_preventiva_checklist_principal_itens sgi_preventiva_checklist_principal_itens[]
+}
+
+model sgi_preventiva_checklist_principal_itens {
+  id_sgi_preventiva_checklist_principal_itens Int                                 @id @default(autoincrement())
+  id_sgi_preventiva_checklist_principal       Int?
+  classificacao                               String?                             @db.VarChar(50)
+  descricao                                   String?                             @db.VarChar(150)
+  tipo_motor                                  String?                             @db.VarChar(20)
+  status_item                                 String?                             @db.VarChar(30)
+  revisao_hrs                                 Int?
+  observacao                                  String?                             @db.VarChar(150)
+  sgi_preventiva_checklist_principal          sgi_preventiva_checklist_principal? @relation(fields: [id_sgi_preventiva_checklist_principal], references: [id_sgi_preventiva_checklist_principal])
+
+  @@index([id_sgi_preventiva_checklist_principal], name: "FK")
+}
+
+model sgi_preventiva_checklist_principal_itens_status {
+  id_sgi_preventiva_checklist_principal_itens_status Int     @id @default(autoincrement())
+  status_checklist                                   String? @db.VarChar(50)
+  sigla                                              String? @db.VarChar(5)
+}
+
+model sgi_preventiva_empilhadeira {
+  id_sgi_preventiva_empilhadeira Int       @id @default(autoincrement())
+  unidade                        String?   @db.VarChar(50)
+  empilhadeira                   String?   @db.VarChar(50)
+  hora_atual                     Int?
+  proxima_preventiva             Int?
+  horas_restantes                Int?
+  status_preventiva              String?   @db.VarChar(50)
+  ultima_atualizacao             DateTime? @default(now()) @db.DateTime(0)
+  usuario_responsavel            String?   @db.VarChar(50)
+  numero_os                      Int?
+}
+
+model sgi_preventivas {
+  id_sgi_preventivas     Int       @id @default(autoincrement())
+  placa                  String?   @db.VarChar(10)
+  data_revisao_concluida DateTime? @db.Date
+  status_preventivas     String?   @db.VarChar(20)
+  data_ultima_revisao    DateTime? @db.Date
+  data_proxima_revisao   DateTime? @db.Date
+  dias_restantes         String?   @db.VarChar(5)
+  documentos             Bytes?
+  documentos_nome        String?   @db.VarChar(50)
+  responsavel            String?   @db.VarChar(20)
+  preventivas            String?   @db.VarChar(20)
+  data_atualizacao       DateTime? @db.DateTime(0)
+}
+
+model sgi_produtos_teste {
+  id_produtos_teste  Int       @id @default(autoincrement())
+  nome_produto       String?   @db.VarChar(20)
+  valor_produto      Decimal?  @db.Decimal(3, 2)
+  validade_produto   DateTime? @db.Date
+  quantidade_estoque String?   @db.VarChar(3)
+}
+
+model sgi_setor_compra {
+  id_sgi_setor_compra Int      @id @default(autoincrement())
+  setor               String?  @unique @db.VarChar(50)
+  valor_total_setor   Decimal? @db.Decimal(10, 2)
+}
+
+model sgi_solicitacao_compra {
+  id_sgi_solicitacao_compra    Int                            @id @default(autoincrement())
+  num_ordem_servico            String?                        @db.VarChar(50)
+  data_solicitacao             DateTime?                      @db.DateTime(0)
+  solicitante                  String?                        @db.VarChar(80)
+  setor                        String?                        @db.VarChar(30)
+  prazo_pagamento              String?                        @db.VarChar(30)
+  centro_custo                 String?                        @db.VarChar(80)
+  tipo_pedido                  String?                        @db.VarChar(15)
+  tipo_compra                  String?                        @db.VarChar(15)
+  motivo                       String?                        @db.MediumText
+  data_atualizacao             DateTime?                      @db.DateTime(0)
+  usuario_responsavel          String?                        @db.VarChar(80)
+  status_solicitacao_compra    String?                        @db.VarChar(30)
+  tipo_solicitacao             String?                        @db.VarChar(50)
+  observacao                   String?                        @db.Text
+  responsavel_cancelamento     String?                        @db.VarChar(50)
+  data_hora_cancelamento       DateTime?                      @db.DateTime(0)
+  motivo_cancelamento          String?                        @db.Text
+  sgi_ordem_compra             sgi_ordem_compra[]
+  sgi_ordem_compra_itens       sgi_ordem_compra_itens[]
+  sgi_ordem_saida              sgi_ordem_saida[]
+  sgi_solicitacao_compra_itens sgi_solicitacao_compra_itens[]
+
+  @@index([id_sgi_solicitacao_compra], name: "id_sgi_solicitacao_compra")
+  @@index([num_ordem_servico], name: "num_ordem_servico")
+  @@index([prazo_pagamento], name: "prazo_pagamento")
+}
+
+model sgi_solicitacao_compra_itens {
+  id_sgi_solicitacao_compra_itens Int                      @id @default(autoincrement())
+  id_sgi_solicitacao_compra       Int?
+  quantidade                      Int
+  descricao                       String?                  @db.VarChar(80)
+  especificacao_adicional         String?                  @db.VarChar(150)
+  valor_unitario                  Decimal?                 @db.Decimal(10, 2)
+  entrega                         String?                  @db.VarChar(30)
+  total                           Decimal?                 @db.Decimal(10, 2)
+  saldo                           Int?
+  ids_prod_em_estoque             String?                  @db.VarChar(90)
+  sgi_solicitacao_compra          sgi_solicitacao_compra?  @relation(fields: [id_sgi_solicitacao_compra], references: [id_sgi_solicitacao_compra])
+  sgi_ordem_compra_itens          sgi_ordem_compra_itens[]
+
+  @@index([id_sgi_solicitacao_compra], name: "FK_sgi_solicitacao_compra_itens_sgi_solicitacao_compra")
+}
+
+model sof_working_times_remarks {
+  id_sof_working_times_remarks Int     @id @default(autoincrement())
+  navioviagem                  String? @db.VarChar(20)
+  id_chave_working_times       String? @db.VarChar(80)
+  remarks                      String? @db.VarChar(300)
+}
+
+model tbl_sys_message {
+  id           Int       @id @default(autoincrement())
+  cod_group    Int?
+  text_message String?   @db.MediumText
+  start_date   DateTime? @db.Date
+  end_date     DateTime? @db.Date
+}
+
+model telegram_cadastro {
+  id_telegram_cadastro Int    @id @default(autoincrement())
+  sistema              String @db.VarChar(50)
+  descricao            String @db.VarChar(255)
+  chat_id              String @default("") @db.VarChar(50)
+  bot_token            String @default("") @db.VarChar(50)
+}
+
+model terno {
+  id_terno           Int       @id @default(autoincrement())
+  id_terno_principal Int       @default(0)
+  placa              String?   @db.Char(20)
+  status             String?   @db.Char(20)
+  data               DateTime? @db.DateTime(0)
+  terno              String    @default("0") @db.Char(50)
+}
+
+model terno_frota {
+  id_terno_frota Int       @id @default(autoincrement())
+  placa          String?   @db.VarChar(50)
+  indicador      String?   @db.VarChar(5)
+  frota_status   String?   @db.VarChar(20)
+  data_hora      DateTime? @db.DateTime(0)
+  terno          Int?
+  obs            String?   @db.VarChar(50)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model terno_led_caminhoes {
+  placa       String?   @db.VarChar(30)
+  terno       String?   @db.VarChar(30)
+  led_status  String?   @db.VarChar(30)
+  wifi_status String?   @db.VarChar(30)
+  led_mac     String?   @db.VarChar(30)
+  data        DateTime? @db.DateTime(0)
+  atualizado  Int?      @default(1)
+  comando     String?   @db.VarChar(50)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model terno_led_token {
+  token String?   @db.VarChar(1024)
+  data  DateTime? @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+model terno_log {
+  id_terno_log       Int      @id @default(autoincrement())
+  id_terno_principal Int?
+  frota              String   @default("0") @db.VarChar(10)
+  placa              String   @default("0") @db.VarChar(20)
+  terno_status       String   @default("0") @db.VarChar(20)
+  caminhao_status    String   @default("0") @db.VarChar(20)
+  data_carregamento  DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  data_transito      DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  data_disponivel    DateTime @default(dbgenerated("('0000-00-00 00:00:00')")) @db.DateTime(0)
+  diff_trans_carreg  Int      @default(0)
+  diff_dispo_trans   Int      @default(0)
+  diff_carreg_dispo  Int      @default(0)
+  navio_nome         String?  @db.VarChar(50)
+  navio_viagem       String?  @db.VarChar(50)
+}
+
+model terno_principal {
+  id_terno_principal Int       @id @default(autoincrement())
+  navio_nome         String?   @db.VarChar(100)
+  navio_viagem       String?   @db.VarChar(100)
+  data_inicio        DateTime? @db.DateTime(0)
+  data_fim           DateTime? @db.DateTime(0)
+}
+
+model trem_viagem {
+  id_trem_viagem      Int       @id @default(autoincrement())
+  viagem              String?   @db.VarChar(25)
+  tempo_bruto         Float?
+  tempo_liquido       Float?
+  tempo_impacto       Float?
+  data_viagem         DateTime? @db.Date
+  quantidade          Int?
+  status_trem         String?   @db.VarChar(20)
+  tempo_ciclo         Float?
+  tempo_impacto_ciclo Float?
+
+  @@index([viagem], name: "viagem")
+}
+
+model trem_viagem_dados {
+  id_trem_viagem_dados Int       @id @default(autoincrement())
+  viagem               String?   @db.VarChar(25)
+  linha                String?   @db.VarChar(50)
+  quantidade           Int?
+  posicionamento       DateTime? @db.DateTime(0)
+  abertura             DateTime? @db.DateTime(0)
+  descarga_inicio      DateTime? @db.DateTime(0)
+  descarga_fim         DateTime? @db.DateTime(0)
+  fechamento           DateTime? @db.DateTime(0)
+  retirada             DateTime? @db.DateTime(0)
+  tc                   Int?
+  cf                   Int?
+  ec                   Int?
+  desc_bruta           Decimal?  @db.Decimal(10, 5)
+  desc_liquida         Decimal?  @db.Decimal(10, 5)
+  tempo_impactos       Decimal?  @db.Decimal(10, 5)
+  tempo_troca          Decimal?  @db.Decimal(10, 5)
+  telegram_usuario     String?   @db.VarChar(50)
+  telegram_hora        DateTime? @db.DateTime(0)
+  usuario              String?   @db.VarChar(50)
+
+  @@index([viagem], name: "viagem")
+}
+
+model trem_viagem_dados_empilhadeiras {
+  id_trem_viagem_dados_empilhadeiras Int                     @id @default(autoincrement())
+  id_trem_viagem_dados               Int?
+  descricao                          String?                 @db.VarChar(50)
+  modelo                             String?                 @db.VarChar(50)
+  empilhadeiras_cadastro             empilhadeiras_cadastro? @relation(fields: [descricao], references: [descricao])
+
+  @@index([descricao], name: "FK_trem_viagem_dados_empilhadeiras_empilhadeiras_cadastro")
+}
+
+model trem_viagem_dados_impactos {
+  id_trem_viagem_dados_impactos Int                   @id @default(autoincrement())
+  id_trem_viagem_dados          Int?
+  tempo                         DateTime?             @db.Time(0)
+  impacto                       String?               @db.VarChar(100)
+  motivos                       String?               @db.VarChar(100)
+  empresa                       String?               @db.VarChar(20)
+  trem_viagem_impactos          trem_viagem_impactos? @relation(fields: [impacto], references: [impacto])
+
+  @@index([impacto], name: "FK_trem_viagem_dados_impactos_trem_viagem_impactos")
+}
+
+model trem_viagem_dados_vagoes {
+  id_trem_viagem_dados_vagoes Int       @id @default(autoincrement())
+  id_trem_viagem_dados        Int?
+  numero                      String?   @db.VarChar(11)
+  descricao                   String?   @db.VarChar(50)
+  vagoes                      String?   @db.VarChar(50)
+  nf                          Int?
+  material                    Int?
+  tons                        Int?
+  vao                         String?   @db.Char(15)
+  tons_2                      Int?
+  vao_2                       Int?
+  obs                         String?   @db.VarChar(155)
+  linha                       Int?
+  data_atual                  DateTime? @db.DateTime(0)
+}
+
+model trem_viagem_dados_vagoes_email {
+  id_trem_viagem_dados_vagoes_email Int     @id @default(autoincrement())
+  nome                              String? @db.VarChar(50)
+  email                             String? @db.VarChar(50)
+}
+
+model trem_viagem_dados_vagoes_planejamento {
+  id_trem_viagem_dados_vagoes_planejamento Int       @id @default(autoincrement())
+  viagem                                   String?   @db.VarChar(8)
+  linha                                    Int?
+  vagao                                    String?   @db.Char(20)
+  nf                                       Int?
+  material                                 Int?
+  tons                                     Int?
+  vao                                      String?   @db.Char(15)
+  tons_2                                   Int?
+  vao_2                                    Int?
+  obs                                      String?   @db.VarChar(155)
+  data_hora_atualizacao                    DateTime? @default(now()) @db.DateTime(0)
+}
+
+model trem_viagem_fonte_impactos {
+  id_trem_viagem_fonte_impactos Int                    @id @default(autoincrement())
+  empresa                       String?                @unique @db.VarChar(50)
+  trem_viagem_impactos          trem_viagem_impactos[]
+}
+
+model trem_viagem_impactos {
+  id_trem_viagem_impactos    Int                          @id @default(autoincrement())
+  impacto                    String?                      @unique @db.VarChar(100)
+  empresa                    String?                      @db.VarChar(50)
+  trem_viagem_fonte_impactos trem_viagem_fonte_impactos?  @relation(fields: [empresa], references: [empresa])
+  trem_viagem_dados_impactos trem_viagem_dados_impactos[]
+
+  @@index([empresa], name: "FK_trem_viagem_impactos_trem_viagem_fonte_impactos")
+}
+
+model trem_viagem_linhas {
+  id_trem_viagem_linha Int     @id @default(autoincrement())
+  linha                String? @db.VarChar(50)
+}
+
+model trem_viagem_qualidade {
+  id_trem_viagem_qualidade    Int                           @id @default(autoincrement())
+  viagem                      String?                       @db.VarChar(15)
+  lote                        String?                       @db.VarChar(15)
+  linha                       Int?
+  ftt                         String?                       @db.VarChar(15)
+  lateral                     Int?
+  base                        Int?
+  rasgo                       Int?
+  impressao                   Int?
+  arame_fardo                 Int?
+  inseto                      Int?
+  desalinhado_max             Int?
+  desalinhado_random          Int?
+  trem_viagem_qualidade_fotos trem_viagem_qualidade_fotos[]
+}
+
+model trem_viagem_qualidade_fotos {
+  id_trem_viagem_qualidade_fotos Int                    @id @default(autoincrement())
+  id_trem_viagem_qualidade       Int?
+  arquivo                        String?                @db.VarChar(100)
+  url                            String?                @db.VarChar(100)
+  trem_viagem_qualidade          trem_viagem_qualidade? @relation(fields: [id_trem_viagem_qualidade], references: [id_trem_viagem_qualidade])
+
+  @@index([id_trem_viagem_qualidade], name: "FK_trem_viagem_qualidade_fotos_trem_viagem_qualidade")
+}
+
+model troca_turno {
+  id_troca_turno          Int                       @id @default(autoincrement())
+  data_vagao              DateTime?                 @db.DateTime(0)
+  turno                   String?                   @db.VarChar(50)
+  assist_logistica        String?                   @db.VarChar(50)
+  lote                    String?                   @db.VarChar(5)
+  linha                   Int?
+  status_troca            String?                   @db.VarChar(20)
+  troca_turno_equipamento troca_turno_equipamento[]
+  troca_turno_obs         troca_turno_obs[]
+}
+
+model troca_turno_assistente_logistica {
+  id_troca_turno_assistente_logistica Int     @id @default(autoincrement())
+  nome                                String? @db.VarChar(150)
+}
+
+model troca_turno_equipamento {
+  id_troca_turno_equipamento                                                                                        Int                              @id @default(autoincrement())
+  id_troca_turno                                                                                                    Int?
+  maquina                                                                                                           String?                          @db.VarChar(30)
+  modelo                                                                                                            String?                          @db.VarChar(30)
+  status_maquina                                                                                                    String?                          @db.VarChar(30)
+  observacao                                                                                                        String?                          @db.VarChar(50)
+  troca_turno                                                                                                       troca_turno?                     @relation(fields: [id_troca_turno], references: [id_troca_turno])
+  troca_turno_equipamento_events_troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno             troca_turno_equipamento_events[] @relation("troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno")
+  troca_turno_equipamento_events_troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno_equipamento troca_turno_equipamento_events[] @relation("troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno_equipamento")
+
+  @@index([id_troca_turno], name: "FK_troca_turno_observacao_troca_turno")
+}
+
+model troca_turno_equipamento_events {
+  id_troca_turno_equipamento_events                                                                          Int                      @id @default(autoincrement())
+  id_troca_turno_equipamento                                                                                 Int?
+  id_troca_turno                                                                                             Int?
+  maquina                                                                                                    String?                  @db.VarChar(50)
+  modelo                                                                                                     String?                  @db.VarChar(50)
+  evento                                                                                                     String?                  @db.Text
+  troca_turno_equipamento_troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno             troca_turno_equipamento? @relation("troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno", fields: [id_troca_turno], references: [id_troca_turno])
+  troca_turno_equipamento_troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno_equipamento troca_turno_equipamento? @relation("troca_turno_equipamentoTotroca_turno_equipamento_events_id_troca_turno_equipamento", fields: [id_troca_turno_equipamento], references: [id_troca_turno_equipamento])
+
+  @@index([id_troca_turno_equipamento], name: "FK_troca_turno_equipamento_events_troca_turno_equipamento")
+  @@index([id_troca_turno], name: "FK_troca_turno_equipamento_events_troca_turno_equipamento_2")
+}
+
+model troca_turno_equipamento_padrao {
+  id_troca_turno_equipamento_padrao Int     @id @default(autoincrement())
+  maquina                           String? @db.VarChar(50)
+  modelo                            String? @db.VarChar(50)
+}
+
+model troca_turno_eventos_padrao {
+  id_troca_turno_eventos_padrao Int     @id @default(autoincrement())
+  eventos                       String? @db.VarChar(100)
+}
+
+model troca_turno_navio {
+  id_troca_turno_navio        Int                           @id @default(autoincrement())
+  data_navio                  DateTime?                     @db.Date
+  turno                       String?                       @db.VarChar(15)
+  assist_logistica            String?                       @db.VarChar(50)
+  troca_turno_navio_geral_obs troca_turno_navio_geral_obs[]
+  troca_turno_navio_obs       troca_turno_navio_obs[]
+  troca_turno_navio_stowplan  troca_turno_navio_stowplan[]
+  troca_turno_navio_watchlist troca_turno_navio_watchlist[]
+}
+
+model troca_turno_navio_geral_obs {
+  id_troca_turno_navio_geral_obs Int                @id @default(autoincrement())
+  id_troca_turno_navio           Int?
+  observacao_geral               String?            @db.VarChar(150)
+  troca_turno_navio              troca_turno_navio? @relation(fields: [id_troca_turno_navio], references: [id_troca_turno_navio])
+
+  @@index([id_troca_turno_navio], name: "FK_troca_turno_navio_obs_geral_troca_turno_navio")
+}
+
+model troca_turno_navio_obs {
+  id_troca_turno_navio_obs Int                @id @default(autoincrement())
+  id_troca_turno           Int?
+  descricao                String?            @db.VarChar(50)
+  observacao               String?            @db.VarChar(150)
+  observacao_geral         String?            @db.VarChar(150)
+  troca_turno_navio        troca_turno_navio? @relation(fields: [id_troca_turno], references: [id_troca_turno_navio])
+
+  @@index([id_troca_turno], name: "FK_troca_turno_navio_obs_troca_turno_navio")
+}
+
+model troca_turno_navio_stowplan {
+  id_troca_turno_navio_stowplan Int                @id @default(autoincrement())
+  id_troca_turno_navio          Int?
+  porao                         Int?
+  camada                        Int?
+  status_navio                  String?            @db.VarChar(15)
+  troca_turno_navio             troca_turno_navio? @relation(fields: [id_troca_turno_navio], references: [id_troca_turno_navio])
+
+  @@index([id_troca_turno_navio], name: "FK_troca_turno_navio_stowplan_troca_turno_navio")
+}
+
+model troca_turno_navio_watchlist {
+  id_troca_turno_navio_watchlist Int                @id @default(autoincrement())
+  id_troca_turno_navio           Int?
+  gang                           Int?
+  hold                           Int?
+  ni                             Int?
+  disport                        String?            @db.VarChar(50)
+  ve                             String?            @db.VarChar(50)
+  units                          Int?
+  tons                           Int?
+  material                       String?            @db.VarChar(50)
+  marks                          String?            @db.VarChar(50)
+  troca_turno_navio              troca_turno_navio? @relation(fields: [id_troca_turno_navio], references: [id_troca_turno_navio])
+
+  @@index([id_troca_turno_navio], name: "FK_troca_turno_navio_watchlist_troca_turno_navio")
+}
+
+model troca_turno_obs {
+  id_troca_turno_obs Int          @id @default(autoincrement())
+  id_troca_turno     Int?
+  tarefa             String?      @db.VarChar(50)
+  status_tarefa      String?      @db.VarChar(20)
+  observacao         String?      @db.Text
+  troca_turno        troca_turno? @relation(fields: [id_troca_turno], references: [id_troca_turno])
+
+  @@index([id_troca_turno], name: "FK_troca_turno_obs_troca_turno")
+}
+
+model users {
+  id                Int          @id @default(autoincrement()) @db.UnsignedInt
+  nome              String       @db.VarChar(255)
+  cargo             String       @db.VarChar(255)
+  unidade           String       @db.VarChar(255)
+  login             String       @db.VarChar(255)
+  password          String       @db.VarChar(180)
+  remember_me_token String?      @db.VarChar(255)
+  created_at        DateTime?     @db.DateTime(0)
+  updated_at        DateTime?     @db.DateTime(0)
+  api_tokens        api_tokens[]
+}
+
+model webflow_cadastro_email_contato {
+  id_webflow_cadastro_email_contato Int     @id @default(autoincrement())
+  login                             String? @unique @db.VarChar(100)
+}
+
+model webflow_cadastro_unidades {
+  id_webflow_cadastro_unidades Int    @id @default(autoincrement())
+  areas                        String @default("") @db.VarChar(50)
+}
+
+model webflow_curriculo_estagiario {
+  id_webflow_curriculo_estagiario Int    @id @default(autoincrement())
+  descricao                       String @default("") @db.VarChar(50)
+}
+
+model webflow_curriculo_funcionario {
+  id_webflow_curriculo_funcionario Int    @id @default(autoincrement())
+  descricao                        String @default("") @db.VarChar(50)
+}
+
+model webflow_files_table {
+  fileid      Int     @id
+  userid      Int?
+  binaryvalue Bytes?
+  filename    String? @db.VarChar(100)
+  filetype    String? @db.VarChar(10)
+}
+
+model webflow_files_table_estagiario {
+  fileid      Int     @id
+  userid      Int?
+  binaryvalue Bytes?
+  filename    String? @db.VarChar(100)
+  filetype    String? @db.VarChar(10)
+}
+
+model webflow_formulario_contatos {
+  id_webflow_formulario_contatos Int     @id @default(autoincrement())
+  local_de_envio                 String? @db.VarChar(50)
+  nome                           String? @db.VarChar(50)
+  email                          String? @db.VarChar(50)
+  telefone                       String? @db.VarChar(50)
+  asssunto                       String? @db.VarChar(100)
+  mensagem                       String? @db.VarChar(255)
+}
+
+model rh_app_chamados {
+  id_rh_app_chamados  Int       @id @default(autoincrement())
+  colaborador         String?   @db.VarChar(50)
+  data_abertura       DateTime? @db.DateTime(0)
+  tipo_chamado        String?   @db.VarChar(50)
+  descricao_chamado   String?   @db.Text
+  anexo_chamado       String?   @db.Text
+  status_chamado      String?   @db.VarChar(50)
+  resposta_chamado    String?   @db.Text
+  data_atendimento    DateTime? @db.DateTime(0)
+  usuario_atendimento String?   @db.VarChar(50)
+  data_finalizado     DateTime? @db.DateTime(0)
+  usuario_finalizado  String?   @db.VarChar(50)
+}
+
+model rh_web_chamados_tipo_cadastro {
+  id_rh_web_chamados_tipo_cadastro Int     @id @default(autoincrement())
+  tipo_chamado                     String? @db.VarChar(50)
+}

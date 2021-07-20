@@ -1,0 +1,15 @@
+/* .table tr:nth-child(even){
+    background-color: #e5e7eb;
+}
+
+.table tr:hover{
+    background-color: #ddd;
+} */
+
+a{
+    text-decoration: none;
+}
+
+a:active {
+    color: initial
+}

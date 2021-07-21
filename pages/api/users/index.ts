@@ -31,15 +31,15 @@ export default async function handler(
     async function atualizarRegistro(){    
         const {item} = req.body
            
-        const {nome} = item //PAROU
+        const {nome, id} = item //PAROU
         
         const result = await prisma.users.update({ 
             data: {nome}, 
-            where: {users:  parseInt(item.users)
+            where: {id:  parseInt(id)
             } 
         })
         // await prisma.navio_cadastro_ship.create({data:{ nome_navio: item.nome_navio }})
-        prisma.$disconnect()
+        await prisma.$disconnect()
         return res.status(200).send({ result: result || '' })
     }
 
@@ -49,7 +49,7 @@ export default async function handler(
         const {nome} = item
         
         const result = await prisma.users.create({ 
-            data: {nome}
+            data: {nome, unidade: ' ', password: ' ', login: ' ', cargo: ' ' }
         })
         // await prisma.navio_cadastro_ship.create({data:{ nome_navio: item.nome_navio }})
         prisma.$disconnect()

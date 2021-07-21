@@ -220,7 +220,7 @@ function FormInserir({getDados, closeModal }) {
                     }
                 </Select>
                 <Input label="Descrição" name="descricao_chamado" type="text"/> 
-                <Input label="Anexar Arquivo" name="anexo_chamado" type="text"/>
+                <Input label="Anexar Arquivo" name="anexo_chamado" type="file"/>
                 {/* <Input label="Status" name="status_chamado" type="text"/>       */}
                 {/* <Input label="Valor" name="valor_taxa" type="text" defaultValue={`${itemselecionado.valor_taxa}`}/> */}
                 <LargeButton loading={loading} type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation title="Enviar"  /> 

@@ -268,19 +268,6 @@ model adonis_schema {
   migration_time DateTime @default(now()) @db.Timestamp(0)
 }
 
-model api_tokens {
-  id         Int       @id @default(autoincrement()) @db.UnsignedInt
-  user_id    Int?      @db.UnsignedInt
-  name       String    @db.VarChar(255)
-  type       String    @db.VarChar(255)
-  token      String    @unique @db.VarChar(64)
-  expires_at DateTime? @db.Timestamp(0)
-  created_at DateTime  @default(dbgenerated("('0000-00-00 00:00:00')")) @db.Timestamp(0)
-  users      users?    @relation(fields: [user_id], references: [id])
-
-  @@index([user_id], name: "api_tokens_user_id_foreign")
-}
-
 model atualizar_sheets {
   id_atualizar_sheets Int       @id @default(autoincrement())
   data                DateTime? @default(now()) @db.DateTime(0)
@@ -3197,16 +3184,34 @@ model troca_turno_obs {
 }
 
 model users {
-  id                Int          @id @default(autoincrement()) @db.UnsignedInt
-  nome              String       @db.VarChar(255)
-  cargo             String       @db.VarChar(255)
-  unidade           String       @db.VarChar(255)
-  login             String       @db.VarChar(255)
-  password          String       @db.VarChar(180)
-  remember_me_token String?      @db.VarChar(255)
-  created_at        DateTime?     @db.DateTime(0)
-  updated_at        DateTime?     @db.DateTime(0)
-  api_tokens        api_tokens[]
+  id       Int     @id @default(autoincrement()) @db.UnsignedInt
+  name     String? @db.VarChar(180)
+  login    String? @db.VarChar(180)
+  password String? @db.VarChar(180)
+  group_id Int     @db.UnsignedInt
+  group    groups  @relation(fields: [group_id], references: [id])
+
+  @@index([group_id], name: "group_id")
+}
+
+model groups {
+  id               Int                @id @default(autoincrement()) @db.UnsignedInt
+  name             String?            @db.VarChar(180)
+  group_permission group_permission[]
+  users            users[]
+}
+
+model group_permission {
+  id        Int     @id @default(autoincrement()) @db.UnsignedInt
+  group_id  Int     @db.UnsignedInt
+  url       String  @db.VarChar(100)
+  canUpdate Boolean
+  canInsert Boolean
+  canDelete Boolean
+  canView   Boolean
+  group     groups  @relation(fields: [group_id], references: [id])
+
+  @@index([group_id], name: "group_id")
 }
 
 model webflow_cadastro_email_contato {
@@ -3256,18 +3261,19 @@ model webflow_formulario_contatos {
 }
 
 model rh_app_chamados {
-  id_rh_app_chamados  Int       @id @default(autoincrement())
-  colaborador         String?   @db.VarChar(50)
-  data_abertura       DateTime? @db.DateTime(0)
-  tipo_chamado        String?   @db.VarChar(50)
-  descricao_chamado   String?   @db.Text
-  anexo_chamado       String?   @db.Text
-  status_chamado      String?   @db.VarChar(50)
-  resposta_chamado    String?   @db.Text
-  data_atendimento    DateTime? @db.DateTime(0)
-  usuario_atendimento String?   @db.VarChar(50)
-  data_finalizado     DateTime? @db.DateTime(0)
-  usuario_finalizado  String?   @db.VarChar(50)
+  id_rh_app_chamados    Int       @id @default(autoincrement())
+  colaborador           String?   @db.VarChar(50)
+  data_abertura         DateTime? @db.DateTime(0)
+  tipo_chamado          String?   @db.VarChar(50)
+  descricao_chamado     String?   @db.Text
+  anexo_chamado         String?   @db.Text
+  status_chamado        String?   @db.VarChar(50)
+  resposta_chamado      String?   @db.Text
+  data_atendimento      DateTime? @db.DateTime(0)
+  usuario_atendimento   String?   @db.VarChar(50)
+  descricao_atendimento String?   @db.Text
+  data_finalizado       DateTime? @db.DateTime(0)
+  usuario_finalizado    String?   @db.VarChar(50)
 }
 
 model rh_web_chamados_tipo_cadastro {

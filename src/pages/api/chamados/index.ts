@@ -22,7 +22,7 @@ const handler = nextConnect<iProps, NextApiResponse>()
         const {id_rh_app_chamados}:any = req.query
         const { descricao_chamado, tipo_chamado } = req.body
         
-        const result = await prisma.rh_app_chamados.create({ 
+        const result = await prisma.rh_app_chamados.create({
             data:{
                 descricao_chamado,
                 status_chamado: 'ABERTO',
@@ -54,7 +54,7 @@ const handler = nextConnect<iProps, NextApiResponse>()
                 data:{
                     status_chamado, 
                     descricao_atendimento:descricao, 
-                    usuario_atendimento:session?.user.name,
+                    usuario_atendimento:session?.data.user.name,
                     data_atendimento: new Date()
                 }, 
                 where:{
@@ -66,7 +66,7 @@ const handler = nextConnect<iProps, NextApiResponse>()
                 data:{
                     status_chamado, 
                     resposta_chamado:descricao,  
-                    usuario_finalizado:session?.user.name,
+                    usuario_finalizado:session?.data.user.name,
                     data_finalizado: new Date()
                 }, 
                 where:{

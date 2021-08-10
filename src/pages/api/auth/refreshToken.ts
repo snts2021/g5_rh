@@ -29,7 +29,7 @@ function handler(req: NextApiRequest, res: NextApiResponse ){
         const payload:any = jwt.decode(refreshToken)
         if(!payload) return res.status(401).send('Token inválido')
         
-        const token = jwt.sign({ user: payload.user }, `${process.env.JWT_SECRET}`, {expiresIn: '5mins'})
+        const token = jwt.sign({ data: payload.data }, `${process.env.JWT_SECRET}`, {expiresIn: '5mins'})
         
         return res
         .setHeader('Set-Cookie',

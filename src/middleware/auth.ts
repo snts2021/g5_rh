@@ -13,9 +13,11 @@ export function getCookie(req: NextApiRequest, name: string){
 }
 
 type IgetSessionResponse = {
-    user : {
-        id: number
-        name: string
+    data: {
+        user : {
+            id: number
+            name: string
+        },
         group: {
             id: number
             name: string
@@ -25,6 +27,7 @@ type IgetSessionResponse = {
 
 export async function getSession(req: NextApiRequest): Promise<IgetSessionResponse | null>  {
     const token = getCookie(req, 'next-token')
+
     if(!token) return null
         
         

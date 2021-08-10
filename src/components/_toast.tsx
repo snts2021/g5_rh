@@ -23,7 +23,7 @@ const Toast:React.FC = () => {
                 open={(visible && message) ? true : false} 
                 onClose={handleClose}
                 autoHideDuration={6000} 
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
                 <Alert severity={type} elevation={2}>{message}</Alert>
             </Snackbar>

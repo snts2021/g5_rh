@@ -11,6 +11,8 @@ import { LargeButton, GridButton } from '../../components/_button'
 import { Select } from "../../components/_select"
 import Image from 'next/image'
 import { url } from "node:inspector"
+import { MdOpenInNew } from "react-icons/md";
+import { AuthContext } from "../../contexts/auth"
 
 ///INFORMA CAMPOS PUXADOS DO BACKEND//
 type iDados = {
@@ -41,6 +43,7 @@ function Chamados(){
     const [isModalVisible, setIsModalVisible] = useState('')
     const [modalinserir, setModalInserir] = useState(false)
     const [modalfinalizado, setModalFinalizado] = useState(false)
+    const {user}=useContext(AuthContext)
     //PEGA OS DADOS DA SELECT
     async function getDados(){
         setLoading(true)
@@ -58,7 +61,12 @@ function Chamados(){
         setGuardarImagem(url)
     }
 
+
+
     async function handleMudarStatus(item: iDados){
+        if(user?.group.name==='colaborador'){
+            return
+        }
         if(item.status_chamado === "ABERTO"){
             setIsModalVisible('Alterar status')
             setItemselecionado(item)
@@ -72,6 +80,11 @@ function Chamados(){
 
     async function handleDescricao(item: iDados){
         setIsModalVisible('Descricao')
+        setItemselecionado(item)
+    }
+
+    async function handleDescricaoChamado(item: iDados){
+        setIsModalVisible('DescricaoChamado')
         setItemselecionado(item)
     }
 
@@ -114,7 +127,9 @@ function Chamados(){
                                 </Box>
                             </Td>
                             <Td>
-                                {item.descricao_chamado}
+                                <Box component="div" sx={{ overflow: 'hidden', width: '200px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                    <Typography variant='caption' sx={{ cursor: 'pointer'}} onClick={()=>  handleDescricaoChamado(item)}> <MdOpenInNew /> {item.descricao_chamado}</Typography> 
+                                </Box>
                             </Td>
                             <Td>
                                 {
@@ -155,7 +170,7 @@ function Chamados(){
                                     <>
                                     <Typography variant='caption'><b>Atendido Por:</b> {item.usuario_atendimento}</Typography> 
                                         <br/>
-                                        <Typography variant='caption' sx={{ cursor: 'pointer'}} onClick={()=>  handleDescricao(item)}><b>Descrição:</b>{item.descricao_atendimento}</Typography> 
+                                        <Typography variant='caption' sx={{ cursor: 'pointer'}} onClick={()=>  handleDescricao(item)}> <MdOpenInNew /> <b>Descrição:</b>{item.descricao_atendimento}</Typography> 
                                         <br/>
                                         <Typography variant='caption'><b>Data:</b> {new Date(item.data_atendimento).toLocaleString('pt-br', {year:"numeric", month: 'numeric', day: "numeric", hour:"2-digit", minute:"2-digit" })}</Typography>
                                     </>
@@ -166,8 +181,8 @@ function Chamados(){
                                     <>
                                     <Typography variant='caption'><b>Finalizado Por:</b> {item.usuario_finalizado}</Typography> 
                                         <br/>
-                                        <Typography variant='caption' onClick={()=> handleDescricao(item)}><b>Descrição:</b> {item.resposta_chamado} </Typography> 
-                                        <br/>
+                                        <Box alignItems='center'><Typography variant='caption' sx={{ cursor: 'pointer'}} onClick={()=> handleDescricao(item)}> <MdOpenInNew /> <b>Descrição:</b> {item.resposta_chamado} </Typography></Box>
+                                        {/* <br/> */}
                                         <Typography variant='caption'><b>Data:</b> {new Date(item.data_finalizado).toLocaleString('pt-br', {year:"numeric", month: 'numeric', day: "numeric", hour:"2-digit", minute:"2-digit" })}</Typography>
                                     </>
                                     : 
@@ -184,6 +199,9 @@ function Chamados(){
                </Modal>
                <Modal  onClose={setIsModalVisible} open={(isModalVisible === "Descricao") ? true : false }> 
                     <FormDescricao itemselecionado={itemselecionado}getDados={getDados}closeModal={setIsModalVisible} /> 
+               </Modal>
+               <Modal  onClose={setIsModalVisible} open={(isModalVisible === "DescricaoChamado") ? true : false }> 
+                    <FormDescricaoChamado itemselecionado={itemselecionado}getDados={getDados}closeModal={setIsModalVisible} /> 
                </Modal>
                 <Modal  onClose={setModalInserir} open={modalinserir}> 
                     <FormInserir getDados={getDados} closeModal={setModalInserir} /> 
@@ -210,6 +228,9 @@ Chamados.requireAuth = true
 
 export default Chamados
 
+
+
+
 function FormAlterarStatus({ itemselecionado, getDados, closeModal }){
     const { createAlert } = useContext(AlertContext)
     const [loading, setLoading] = useState(false)
@@ -229,7 +250,7 @@ function FormAlterarStatus({ itemselecionado, getDados, closeModal }){
     }
 
     return(
-        <Box sx={{ paddingY: 3, paddingX: 2, maxWidth: 400 }}>
+        <Box sx={{ paddingY: 3, paddingX: 2,  width: '95vw',  maxWidth: 400 }}>
             <Form onSubmit={handleSubmit}>
             <Typography component="h4" variant="h6" fontWeight="bold" >Inserir</Typography>     
                 <Select loading={false}  name="status_chamado"  label="Status do Chamado" defaultValue={itemselecionado.status_chamado} >
@@ -242,6 +263,37 @@ function FormAlterarStatus({ itemselecionado, getDados, closeModal }){
         </Box>
     )
 }
+
+function FormDescricaoChamado({ itemselecionado, getDados, closeModal }){
+    const { createAlert } = useContext(AlertContext)
+    const [loading, setLoading] = useState(false)
+    async function handleSubmit(event){
+        const{fields, form}=serialize(event)
+        try {
+
+            setLoading(true)
+            const response = await api.put(`/chamados?id_rh_app_chamados=${itemselecionado.id_rh_app_chamados}`, form)
+            setLoading(false)
+            getDados()
+            closeModal('')
+            console.log(response.data)
+        } catch (error) {
+            console.log(error.response.data,fields)
+        }
+    }
+
+    return(
+        <Box sx={{ paddingY: 3, paddingX: 2, width: '95vw', maxWidth: 400 }}>
+            <Form onSubmit={handleSubmit} border-radius>
+            <Typography component="h4" variant="h6" fontWeight="bold" >Descrição</Typography>
+            <br/>
+                {/* {(itemselecionado.status_chamado === "EM ANDAMENTO") ? itemselecionado.descricao_atendimento : itemselecionado.resposta_chamado} */}
+                {itemselecionado.descricao_chamado}
+            </Form>
+        </Box>
+    )
+}
+
 
 function FormDescricao({ itemselecionado, getDados, closeModal }){
     const { createAlert } = useContext(AlertContext)
@@ -262,18 +314,11 @@ function FormDescricao({ itemselecionado, getDados, closeModal }){
     }
 
     return(
-        <Box sx={{ paddingY: 3, paddingX: 2, maxWidth: 400 }}>
+        <Box sx={{ paddingY: 3, paddingX: 2,  width: '95vw', maxWidth: 400 }}>
             <Form onSubmit={handleSubmit} border-radius>
             <Typography component="h4" variant="h6" fontWeight="bold" >Descrição</Typography>
             <br/>
                 {(itemselecionado.status_chamado === "EM ANDAMENTO") ? itemselecionado.descricao_atendimento : itemselecionado.resposta_chamado}
-            {/* <Typography component="h4" variant="h6" fontWeight="bold" >Inserir</Typography>     
-                <Select loading={false}  name="status_chamado"  label="Status do Chamado" defaultValue={itemselecionado.status_chamado} >
-                    <MenuItem value='EM ANDAMENTO'>EM ANDAMENTO</MenuItem>
-                    <MenuItem value='FINALIZADO'>FINALIZADO</MenuItem>
-                </Select>
-                <Input label="Descrição" name="descricao" type="text" multiline rows={4}/> */}
-                {/* <LargeButton loading={loading} type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation title="Enviar"  />  */}
             </Form>
         </Box>
     )
@@ -316,7 +361,7 @@ function FormInserir({getDados, closeModal }) {
     
     return (
         <Form onSubmit={handleSubmit} >
-            <Box sx={{ paddingY: 3, paddingX: 2, maxWidth: 400 }}>
+            <Box sx={{ paddingY: 3, paddingX: 2, width: '95vw', maxWidth: 400}}>
                 <Typography component="h4" variant="h6" fontWeight="bold" >Inserir</Typography>
                 <Select loading={loading}  name="tipo_chamado"  label="Tipo de Chamado"  >
                     {
@@ -325,7 +370,7 @@ function FormInserir({getDados, closeModal }) {
                         })
                     }
                 </Select>
-                <Input label="Descrição" name="descricao_chamado" type="text"/> 
+                <Input label="Descrição" name="descricao_chamado" type="text" multiline rows={4}/>
                 <Input label="Anexar Arquivo" name="anexo_chamado" type="file"/>
                 <LargeButton loading={loading} type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation title="Enviar"  /> 
             </Box>

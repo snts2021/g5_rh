@@ -2,7 +2,7 @@ import { Button, CircularProgress } from "@material-ui/core"
 
 const LargeButton = ({loading, title, ...props}) => {
   return (
-    <Button sx={{width: '100%'}} variant="contained" disabled={loading} disableElevation {...props} >
+    <Button sx={{width: '100%', fontWeight: 'bold', color: 'white'}} variant="contained" disabled={loading} disableElevation {...props} >
         {
             loading ?
             <CircularProgress size={25} color="inherit" />
@@ -18,9 +18,10 @@ type iGridButton = {
     color: 'success' | 'error' | 'primary' 
     onClick: any
     sx?: any
+    title?: string
 }
 
-function GridButton({ type, color, ...props} :iGridButton){
+function GridButton({ type, color, title, ...props} :iGridButton){
   
     function getTitleByType(){
         switch (type) {
@@ -36,10 +37,23 @@ function GridButton({ type, color, ...props} :iGridButton){
     return (
     <Button variant="contained" color={color} disableElevation sx={{ fontWeight: 'bold', color: 'white'}} {...props} >
         {
-            getTitleByType()
+            title ? title : getTitleByType()
         }
     </Button>
     )
 }
 
-export  {LargeButton, GridButton}
+function DefaultButton({loading = false, children, ...props}) {
+    return (
+        <Button disabled={loading} disableElevation {...props} >
+            {
+                loading ?
+                <CircularProgress size={25} color="inherit" />
+                :
+                <>{children}</>
+            }
+        </Button>
+    )
+}
+
+export  {LargeButton, GridButton, DefaultButton}

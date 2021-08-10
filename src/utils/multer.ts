@@ -9,7 +9,7 @@ aws.config.update({
     region: process.env.AWSREGION,
 })
 
-const s3 = new aws.S3({})
+export const s3 = new aws.S3({})
 
 const upload = multer({
     storage: multerS3({

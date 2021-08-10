@@ -30,6 +30,7 @@ export const TopBar = () => {
             <AppBar
                 position="fixed"
                 sx={{
+                    display: drawerOpen ? 'none' : 'initial',
                     transition: 'all ease 200ms',
                     width: { sm: `calc(100% - ${drawerOpen ? '230px' : '0px'})`},
                     backgroundColor: 'white',

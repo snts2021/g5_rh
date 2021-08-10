@@ -9,13 +9,16 @@ import { AlertContext } from "../../contexts/alert"
 import { api } from "../../utils/api"
 import {LargeButton, GridButton} from '../../components/_button'
 
+
 type iDados = {
-    id_rh_web_chamados_tipo_cadastro : number    
-    tipo_chamado                     : String
+    id_rh_app_documentos : number
+    colaborador          : String
+    descricao            : String
+    arquivo              : String
 }
 
 
-function ChamadosCadastro(){
+function EnvioDocumento(){
 
     const [dados, setDados] = useState<iDados[]>([])
     const [loading, setLoading] = useState(false)
@@ -25,7 +28,8 @@ function ChamadosCadastro(){
     //PEGA OS DADOS DA SELECT
     async function getDados(){
         setLoading(true)
-        const resultado = await api.get('/tipo_chamados_cadastro/')
+        const resultado = await api.get('/envio_documento/')
+        console.log(resultado.data.dados)
         setDados(resultado.data.dados)
         setLoading(false)
       }
@@ -43,13 +47,13 @@ function ChamadosCadastro(){
         <>
         <CssBaseline />
             <Container sx={{ backgroundColor: 'background.default', marginTop: 8, width: '100vw', height: '100vh'}}>
-            <Header title="Tipo de Chamado" >
+            <Header title="Documentos" >
             </Header>
                 {/* <Button onClick={() => setModalInserir(true)}  variant="contained" color="primary" >
                     Novo
                 </Button> */}
             <GridButton onClick={() => setModalInserir(true)}  type="insert" color="success" sx={{ marginBottom: 2 }} />
-            <Grid tableData={dados} setData={setDados} titles={["","Tipo de Chamado" ]} loading={loading}>
+            <Grid tableData={dados} setData={setDados} titles={["","Descrição","Documento" ]} loading={loading}>
                 {
                     dados.map((item, index) => {
                     return(
@@ -64,7 +68,10 @@ function ChamadosCadastro(){
                                 </Box>
                             </Td>
                             <Td>
-                                {item.tipo_chamado}
+                                {item.descricao}
+                            </Td>
+                            <Td>
+                            <a download href={item.arquivo} target="_blank" rel="noreferrer" >Vizualizar</a>
                             </Td>
                         </Tr>
                     )
@@ -83,20 +90,20 @@ function ChamadosCadastro(){
         </>
     )
 }
-ChamadosCadastro.requireAuth = true
+EnvioDocumento.requireAuth = true
 
-export default ChamadosCadastro
+export default EnvioDocumento
 
 function FormEditar({ itemselecionado, getDados, closeModal }) {
     const { createAlert } = useContext(AlertContext)
     const [loading, setLoading] = useState(false)
     
     async function handleSubmit(event: any){
-        const {fields, emptyFields } = serialize(event)
+        const {form, emptyFields } = serialize(event)
         if(emptyFields.length < 0) return createAlert('Preencha todos os campos', 'error')
         try {
             setLoading(true)
-            const res = await api.put('/tipo_chamados_cadastro/', {item: fields}) //ENVIA OS DADOS PARA O BACK END (API E BANCO DE DADOS)
+            const res = await api.put(`/envio_documento?id_rh_app_documentos=${itemselecionado.id_rh_app_documentos}`, form) //ENVIA OS DADOS PARA O BACK END (API E BANCO DE DADOS)
             createAlert('Registro atualizado com sucesso!', 'success')            
             getDados()
             return closeModal(false)
@@ -110,29 +117,31 @@ function FormEditar({ itemselecionado, getDados, closeModal }) {
 
     return (
         <Form onSubmit={handleSubmit} >
-            <Box sx={{ paddingY: 3, paddingX: 2, maxWidth: 400 }}>
+            <Box sx={{ paddingY: 3, paddingX: 2, width: '95vw',  maxWidth: 400 }}>
                 <Typography component="h4" variant="h6" fontWeight="bold" >Editar Registro</Typography>
-                <input name="id_rh_web_chamados_tipo_cadastro" type="hidden" defaultValue={`${itemselecionado.id_rh_web_chamados_tipo_cadastro}`}/>
-                <Input onChange={(value)=>console.log(value)} label="Tipo de Chamado" name="tipo_chamado" type="text" defaultValue={`${itemselecionado.tipo_chamado}`}/>        
-                {/* <Input label="Valor" name="valor_taxa" type="text" defaultValue={`${itemselecionado.valor_taxa}`}/> */}
+                {/* <input name="id_rh_app_documentos" type="hidden" defaultValue={`${itemselecionado.id_rh_app_documentos}`}/> */}
+                <Input label="Descrição" name="descricao" type="text" defaultValue={`${itemselecionado.descricao}`}/>        
+                <Input label="Documento" name="envio_documento" type="file" />
+                {/* <a download href={itemselecionado.arquivo} target="_blank" rel="noreferrer" >Vizualizar</a> */}
                 {/* <Button type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation>Enviar</Button> */}
                 <LargeButton loading={loading} type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation title="Enviar"  />    
             </Box>
         </Form>
     )
 }
-
+// defaultValue={`${itemselecionado.arquivo}`}
 function FormInserir({getDados, closeModal }) {
     const { createAlert } = useContext(AlertContext)
     const [loading, setLoading] = useState(false)
     
     async function handleSubmit(event: any){
-        const {fields, emptyFields } = serialize(event)
+        const {form, emptyFields } = serialize(event)
         if(emptyFields.length < 0) return createAlert('Preencha todos os campos', 'error')
         try {
             setLoading(true)
-            const res = await api.post('/tipo_chamados_cadastro/', {item: fields}) //ENVIA OS DADOS PARA O BACK END (API E BANCO DE DADOS)
+            const res = await api.post('/envio_documento/', form) //ENVIA OS DADOS PARA O BACK END (API E BANCO DE DADOS)
             createAlert('Registro com sucesso!', 'success')            
+            setLoading(false)
             getDados()
             return closeModal(false)
         } catch (error) {
@@ -145,14 +154,16 @@ function FormInserir({getDados, closeModal }) {
 
     return (
         <Form onSubmit={handleSubmit} >
-            <Box sx={{ paddingY: 3, paddingX: 2, maxWidth: 400 }}>
+            <Box sx={{ paddingY: 3, paddingX: 2, width: '95vw',  maxWidth: 400 }}>
                 <Typography component="h4" variant="h6" fontWeight="bold" >Inserir</Typography>
-                <Input onChange={(value)=>console.log(value)} label="Descrição" name="tipo_chamado" type="text"/>        
+                <Input onChange={(value)=>console.log(value)} label="Descrição" name="descricao" type="text"/>
+                <Input label="Anexar Documento" name="envio_documento" type="file"/>    
                 {/* <Input label="Valor" name="valor_taxa" type="text" defaultValue={`${itemselecionado.valor_taxa}`}/> */}
                 {/* <LargeButton loading={loading} type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation title="Enviar"  />  */}
-                <Button type="submit" variant="contained" size="large" sx={{ width: '100%', marginTop: 2}} disableElevation>Enviar</Button>    
+                <LargeButton loading={loading} title='Enviar' type='submit'></LargeButton>
             </Box>
         </Form>
     )
 }
+
 

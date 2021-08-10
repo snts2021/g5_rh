@@ -3,7 +3,7 @@ import { parseCookies } from 'nookies'
 import jwt from "jsonwebtoken";
 import { useRouter } from "next/router";
 import { api } from "../utils/api";
-import { Box, CircularProgress, CssBaseline } from "@material-ui/core";
+import { Backdrop, Box, CircularProgress, CssBaseline } from "@material-ui/core";
 
 type iUser = {
     id: number
@@ -34,6 +34,10 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         api.interceptors.response.use( response => response, async (error) => {
+            if(error.response.status === 403) {
+                
+                router.push('/security/groups')
+            }
             if(error.response.status === 401) {
                 
                 const { config } = error
@@ -66,9 +70,9 @@ export const AuthProvider = ({children}) => {
         if(!decodedToken) {
             router.push('/')
         }
-
+        
         if(decodedToken) {
-            const user = decodedToken.user
+            const user = decodedToken.data.user
             setUser(user)
 
         }

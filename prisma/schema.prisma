@@ -3184,34 +3184,85 @@ model troca_turno_obs {
 }
 
 model users {
-  id       Int     @id @default(autoincrement()) @db.UnsignedInt
-  name     String? @db.VarChar(180)
-  login    String? @db.VarChar(180)
-  password String? @db.VarChar(180)
-  group_id Int     @db.UnsignedInt
-  group    groups  @relation(fields: [group_id], references: [id])
+  id                Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name              String?             @db.VarChar(180)
+  login             String?             @unique @db.VarChar(180)
+  password          String?             @db.VarChar(180)
+  status            String?             @default("Inativo") @db.VarChar(80)
+  role              String?             @db.VarChar(50)
+  remember_me_token remember_me_token[]
+  groups            users_groups[]
+}
 
-  @@index([group_id], name: "group_id")
+model log {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  user       String   @db.VarChar(50)
+  url        String   @db.VarChar(50)
+  method     String   @db.VarChar(50)
+  body       String   @db.LongText
+  created_at DateTime @default(now())
+}
+
+model remember_me_token {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  token      String   @db.MediumText
+  user_id    Int      @db.UnsignedInt
+  created_at DateTime @default(now())
+  users      users    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], name: "user_id")
+}
+
+model users_groups {
+  id       Int    @id @default(autoincrement())
+  user_id  Int    @db.UnsignedInt
+  group_id Int    @db.UnsignedInt
+  group    groups @relation(fields: [group_id], references: [id])
+  user     users  @relation(fields: [user_id], references: [id])
+
+  @@index([group_id], name: "users_groups_fk_1")
+  @@index([user_id], name: "users_groups_fk_2")
 }
 
 model groups {
-  id               Int                @id @default(autoincrement()) @db.UnsignedInt
-  name             String?            @db.VarChar(180)
-  group_permission group_permission[]
-  users            users[]
+  id          Int                @id @default(autoincrement()) @db.UnsignedInt
+  name        String?            @db.VarChar(180)
+  module_id   Int                @db.UnsignedInt
+  modules     modules            @relation(fields: [module_id], references: [id])
+  permissions group_permission[]
+  users       users_groups[]
+
+  @@index([module_id], name: "module_id")
+}
+
+model modules {
+  id       Int      @id @default(autoincrement()) @db.UnsignedInt
+  name     String   @db.VarChar(100)
+  base_url String?  @db.VarChar(100)
+  icon     String?  @db.VarChar(100)
+  groups   groups[]
 }
 
 model group_permission {
-  id        Int     @id @default(autoincrement()) @db.UnsignedInt
-  group_id  Int     @db.UnsignedInt
-  url       String  @db.VarChar(100)
-  canUpdate Boolean
-  canInsert Boolean
-  canDelete Boolean
-  canView   Boolean
-  group     groups  @relation(fields: [group_id], references: [id])
+  id             Int          @id @default(autoincrement()) @db.UnsignedInt
+  group_id       Int          @db.UnsignedInt
+  canUpdate      Boolean
+  canInsert      Boolean
+  canDelete      Boolean
+  canView        Boolean
+  application_id Int          @db.UnsignedInt
+  application    applications @relation(fields: [application_id], references: [id])
+  group          groups       @relation(fields: [group_id], references: [id])
 
+  @@index([application_id], name: "application_id")
   @@index([group_id], name: "group_id")
+}
+
+model applications {
+  id          Int                @id @default(autoincrement()) @db.UnsignedInt
+  url         String             @db.VarChar(100)
+  displayName String?            @db.VarChar(100)
+  groups      group_permission[]
 }
 
 model webflow_cadastro_email_contato {
@@ -3279,4 +3330,12 @@ model rh_app_chamados {
 model rh_web_chamados_tipo_cadastro {
   id_rh_web_chamados_tipo_cadastro Int     @id @default(autoincrement())
   tipo_chamado                     String? @db.VarChar(50)
+}
+
+model rh_app_documentos {
+  id_rh_app_documentos Int       @id @default(autoincrement())
+  colaborador          String?   @db.VarChar(100)
+  descricao            String?   @db.Text
+  arquivo              String?   @db.Text
+  ultima_atualizacao   DateTime? @default(now()) @db.DateTime(0)
 }

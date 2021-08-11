@@ -9,6 +9,12 @@ const Sidebar = ({ drawerOpen, setDrawerOpen }: any) => {
     const { SignOut } = useContext(AuthContext)
     const mobile=useMediaQuery('(max-width:500px)')
 
+    const router = useRouter()
+
+    async function handleNavigate(){
+        router.push('http://localhost:3005')
+    }
+
     return (
         <>
          {
@@ -27,11 +33,11 @@ const Sidebar = ({ drawerOpen, setDrawerOpen }: any) => {
                         border: 0,
                         top: 0,
                         boxSizing: 'border-box',
-                        height: 'calc( 100vh - 70px )'
+                        height: mobile ? 'calc( 100vh - 70px )' : '100vh'
                     },
                 }}
                 variant="persistent"
-                anchor="bottom"
+                anchor={ mobile ? "bottom" : 'left'}
                 open={drawerOpen}
             >
                 <List sx={{ 
@@ -43,14 +49,7 @@ const Sidebar = ({ drawerOpen, setDrawerOpen }: any) => {
                     justifyContent: 'space-between',
                 }}>
                 <List>
-                    {/* <ListItem button sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
-                        <IconButton sx={{color: 'white'}} >
-                            <MdPerson />
-                        </IconButton>
-                        <Typography component="p" variant="subtitle2" >
-                            Usuários
-                        </Typography>
-                    </ListItem> */}
+                    
                     <List sx={{ marginTop: 2}}>
                     {/* ADICIONAR NOVOS ELEMENTOS NO MENU */}
                         <SideMenuItem 
@@ -85,7 +84,7 @@ const Sidebar = ({ drawerOpen, setDrawerOpen }: any) => {
                     </List>
                     
                 </List>
-                <ListItem onClick={() => SignOut()} button sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
+                <ListItem onClick={() => handleNavigate()} button sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
                         <IconButton sx={{color: 'white'}}>
                             <MdExitToApp />
                         </IconButton>
@@ -99,13 +98,12 @@ const Sidebar = ({ drawerOpen, setDrawerOpen }: any) => {
                 display: !mobile? 'intial':'none',
                 position: 'absolute', 
                 transition: 'all ease 200ms',
-                right: `${drawerOpen ? '-190px' : '40px'}`, 
+                right: `${drawerOpen ? '-185px' : '50px'}`, 
                 top: 60, 
                 zIndex: 999999, 
-                backgroundColor: 'background.default', 
-                borderRadius: '100%', 
-                padding: 1 }}>
-                <Fab size="small" sx={{fontSize: '30px'}} color="primary"  onClick={() => setDrawerOpen(!drawerOpen)} >
+                borderRadius: '100%' 
+                }}>
+                <Fab size="small" sx={{fontSize: '30px'}} color="default"  onClick={() => setDrawerOpen(!drawerOpen)} >
                     {
                         !drawerOpen ?
                         <MdKeyboardArrowRight/>

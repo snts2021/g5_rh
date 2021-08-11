@@ -3,6 +3,7 @@ import { prisma } from '../../../utils/database'
 import multer from '../../../utils/multer'
 import nextConnect from 'next-connect'
 import { getSession } from '../../../middleware/auth'
+import { withRules } from '../../../middleware/withRules'
 
 
 type Data = {
@@ -85,4 +86,4 @@ export const config = {
   }
 
 
-export default handler
+export default withRules(handler)

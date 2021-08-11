@@ -3,7 +3,7 @@ import { useState } from "react"
 
 function customList(items, checked, setChecked, prop) {
     return (
-        <Paper sx={{ width: 200, height: 230, overflow: 'auto' }}>
+        <Paper sx={{ width: '100%', height: '100%', maxHeight: '50vh', overflow: 'auto' }}>
             <List 
                 dense
                 component="div"
@@ -79,7 +79,7 @@ export function TransferList({ leftList, rightList, setRightList, setLeftList, p
     }
 
     return( 
-        <Box component="div" sx={{ display: 'grid', gap: 1, marginTop: 4, gridTemplateColumns: '1fr 1fr 1fr', justifyContent: 'center', alignItems: 'center'}}> 
+        <Box component="div" sx={{ display: 'grid', gap: 1, marginTop: 4, width: '100%', gridTemplateColumns: '2fr 1fr 2fr', justifyContent: 'center', alignItems: 'center'}}> 
             {customList(leftList, checked, setChecked, prop)}
             <Box component="div" sx={{ display: 'flex', gap: 2, width: '100%', alignItems: 'center', flexDirection: 'column' }} >
                 <Box sx={{ maxWidth: 20, display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'center'}}>

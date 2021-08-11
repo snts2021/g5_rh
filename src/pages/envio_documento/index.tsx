@@ -25,13 +25,20 @@ function EnvioDocumento(){
     const [modaleditar, setModalEditar] = useState(false)
     const [itemselecionado, setItemselecionado] = useState<iDados>({} as iDados)
     const [modalinserir, setModalInserir] = useState(false)
+    
+    const { createAlert } = useContext(AlertContext)
+    
     //PEGA OS DADOS DA SELECT
     async function getDados(){
         setLoading(true)
-        const resultado = await api.get('/envio_documento/')
-        console.log(resultado.data.dados)
-        setDados(resultado.data.dados)
-        setLoading(false)
+        try {
+            const resultado = await api.get('/envio_documento/')
+            setDados(resultado.data.dados)
+            setLoading(false)
+        } catch (error) {
+            createAlert(`${error.response.data}`, 'error')
+        }
+
       }
     
     const handleEdit = (item: iDados) => {
@@ -71,7 +78,7 @@ function EnvioDocumento(){
                                 {item.descricao}
                             </Td>
                             <Td>
-                            <a download href={item.arquivo} target="_blank" rel="noreferrer" >Vizualizar</a>
+                            <a download href={`${item.arquivo}`} target="_blank" rel="noreferrer" >Vizualizar</a>
                             </Td>
                         </Tr>
                     )

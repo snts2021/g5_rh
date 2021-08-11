@@ -209,7 +209,7 @@ function FormGroups({ selectItem }){
     }, [])
 
     return(
-        <Box sx={{ paddingX: 2, paddingTop: 4, maxWidth: 550 }}>
+        <Box sx={{ paddingX: 2, paddingTop: 4, width: '100vw', maxWidth: 750 }}>
             <Typography variant="h6" fontWeight="bold" >Permissões {selectItem.name} </Typography>
             <TransferList leftList={leftList} rightList={rightList} setRightList={setRightList} setLeftList={setLeftList} prop="displayName"/>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end',     marginTop: 2, marginBottom: 3}}>
@@ -261,7 +261,7 @@ function FormPermissions({ selectItem }){
     }, [])
 
     return (
-        <Box sx={{ width: '100vw', maxWidth: 750}}>
+        <Box sx={{ width: '100vw', maxWidth: 700 }}>
             <Grid titles={titles} tableData={dados} setData={setDados} ignoreFilter={['perm']} loading={false} >
                 {dados.map( (item, index) => {
                     return (

@@ -44,12 +44,18 @@ function Chamados(){
     const [modalinserir, setModalInserir] = useState(false)
     const [modalfinalizado, setModalFinalizado] = useState(false)
     const {user}=useContext(AuthContext)
+    
     //PEGA OS DADOS DA SELECT
     async function getDados(){
         setLoading(true)
-        const resultado = await api.get('/chamados/')
-        setDados(resultado.data.dados)
-        setLoading(false)
+
+        try {
+            const resultado = await api.get('/chamados/')
+            setDados(resultado.data.dados)
+            setLoading(false)
+        } catch (error) {
+            createAlert(`${error.response.data}`, 'error')
+        }
       }
     
     const handleEdit = (item: iDados) => {
@@ -64,9 +70,8 @@ function Chamados(){
 
 
     async function handleMudarStatus(item: iDados){
-        if(user?.group.name==='colaborador'){
-            return
-        }
+        const colaborador = user?.groups.filter( item => (item.group.name === 'colaborador') && true )
+        if(colaborador) return 
         if(item.status_chamado === "ABERTO"){
             setIsModalVisible('Alterar status')
             setItemselecionado(item)

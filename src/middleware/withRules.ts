@@ -6,15 +6,12 @@ async function getRules(req, user){
     let path = req.url.split('/')
     path = `/${path[path.length - 1]}`
     if(path.split('?').length > 1) path = path.split('?')[0]
-
     let rules = { canView: false, canUpdate: false, canDelete: false, canInsert: false }
-    
     const idGroups: any = []
     user.groups.forEach( (item: any) => {
         idGroups.push(item.group.id)
-        if(item.group.name === "super") path = "*"
+        if(item.group.name === "super" || item.group.name === "dev") path = "*"
     })
-
     
     const groupsRules = await prisma.group_permission.findMany({ 
         where: {

@@ -1,4 +1,4 @@
-import { AppBar, Box, Breadcrumbs, CssBaseline, Toolbar, Typography } from "@material-ui/core"
+import { AppBar, Box, Breadcrumbs, CssBaseline, Toolbar, Typography, useMediaQuery } from "@material-ui/core"
 import Link from "next/link"
 import { useRouter } from 'next/router'
 import { useEffect, useState } from "react"
@@ -7,10 +7,15 @@ import { Sidebar } from "./_sidebar"
 
 
 export const TopBar = () => {
+    const mobile=useMediaQuery('(max-width:500px)')
     
     const breadcrumbsMaps = {
         '/custos': 'Custo Geral!',
+        '/security': 'Segurança',
+        '/users': 'Usuários',
+        '/groups': 'Grupos',
         '/chamados': 'Chamados',
+        '/envio_documento': 'Envio documento',
         '/tipo_chamados_cadastro': 'Cadastrar de Tipo de Chamado',
         // '/taxa-salario': 'Salário',
     }
@@ -30,7 +35,7 @@ export const TopBar = () => {
             <AppBar
                 position="fixed"
                 sx={{
-                    display: drawerOpen ? 'none' : 'initial',
+                    display: (drawerOpen && mobile) ? 'none' : 'initial',
                     transition: 'all ease 200ms',
                     width: { sm: `calc(100% - ${drawerOpen ? '230px' : '0px'})`},
                     backgroundColor: 'white',

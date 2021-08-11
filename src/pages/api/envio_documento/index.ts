@@ -3,6 +3,7 @@ import { prisma } from '../../../utils/database'
 
 import multer, { s3 } from '../../../utils/multer'
 import nextConnect from 'next-connect'
+import { withRules } from '../../../middleware/withRules'
 
 type Data = {
     dados?: any[]
@@ -79,4 +80,4 @@ const handler = nextConnect<iProps, NextApiResponse>()
         }
       }
 
-    export default handler
+export default withRules(handler)

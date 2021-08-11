@@ -11,20 +11,18 @@ export default function Page() {
   
 export async function getServerSideProps(context) {
     const user = await getSession(context.req)
-  
+    console.log(user)
 
     if(user) return {
       redirect: {
         destination: '/main'
       }
     }
-    
-return{redirect: {
-  destination: '/login'
-}}
 
     return {
-      props: {}
+      redirect: {
+        destination: 'http://localhost:3005'
+      }
     }
-  
-  }
+    
+}

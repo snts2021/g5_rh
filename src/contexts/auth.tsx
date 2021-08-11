@@ -5,13 +5,23 @@ import { useRouter } from "next/router";
 import { api } from "../utils/api";
 import { Backdrop, Box, CircularProgress, CssBaseline } from "@material-ui/core";
 
-type iUser = {
-    id: number
-    name: string
+type iGroup = {
     group: {
         id: number
-        name: string
+        name: string 
+        module_id: number
     }
+    group_id: number
+}
+
+type iUser = {
+    user: {
+        id: number
+        name: string
+        role: string
+        login: string
+    }
+    groups: iGroup[]
 }
 
 type iAuthProps = {
@@ -34,15 +44,11 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         api.interceptors.response.use( response => response, async (error) => {
-            if(error.response.status === 403) {
-                
-                router.push('/security/groups')
-            }
             if(error.response.status === 401) {
                 
                 const { config } = error
                 config._retryCount = config._retryCount || 0
-                if(config._retryCount >= 3) return error
+                if(config._retryCount >= 2) return error
                 config._retryCount +=1
     
                 try {
@@ -61,6 +67,15 @@ export const AuthProvider = ({children}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
     
+    async function getRememberMeToken(){
+        try {
+            await api.get('/auth/refreshToken')
+            router.reload()
+        } catch (error) {
+            console.log(error.response.data)
+            await SignOut()
+        }
+    }
 
     useEffect(() => {
         const cookies = parseCookies()
@@ -68,11 +83,17 @@ export const AuthProvider = ({children}) => {
         const decodedToken: any = jwt.decode(token)
         
         if(!decodedToken) {
-            router.push('/')
+            const rememberMeToken = cookies['next-remember-me-token']
+            const decodedRememberMeToken: any = jwt.decode(rememberMeToken)
+            if(decodedRememberMeToken){
+               getRememberMeToken()
+            }else {
+                router.push('/')
+            }
         }
-        
+
         if(decodedToken) {
-            const user = decodedToken.data.user
+            const user = decodedToken.data
             setUser(user)
 
         }
